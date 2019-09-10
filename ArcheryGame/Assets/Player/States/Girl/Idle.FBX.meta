@@ -1,0 +1,127 @@
+fileFormatVersion: 2
+guid: 42efcbf054540574283aad0ef856dd6b
+timeCreated: 1473924118
+licenseType: Store
+ModelImporter:
+  serializedVersion: 18
+  fileIDToRecycleName:
+    100000: //RootNode
+    100002: avatar2_body
+    100004: avatar2_head
+    100006: Bone_girl_breast
+    100008: Bone_girl_center
+    100010: Bone_girl_chest
+    100012: Bone_girl_head
+    100014: Bone_girl_L arm
+    100016: Bone_girl_L foot
+    100018: Bone_girl_L forearm
+    100020: Bone_girl_L hand
+    100022: Bone_girl_L hip
+    100024: Bone_girl_L leg
+    100026: Bone_girl_L shoulder
+    100028: Bone_girl_L thigh
+    100030: Bone_girl_R arm
+    100032: Bone_girl_R foot
+    100034: Bone_girl_R forearm
+    100036: Bone_girl_R hand
+    100038: Bone_girl_R hip
+    100040: Bone_girl_R leg
+    100042: Bone_girl_R shoulder
+    100044: Bone_girl_R thigh
+    100046: Bone_girl_skirt1
+    100048: Bone_girl_skirt2
+    100050: Bone_girl_skirt3
+    100052: Bone_girl_skirt4
+    100054: Bone_girl_spine
+    400000: //RootNode
+    400002: avatar2_body
+    400004: avatar2_head
+    400006: Bone_girl_breast
+    400008: Bone_girl_center
+    400010: Bone_girl_chest
+    400012: Bone_girl_head
+    400014: Bone_girl_L arm
+    400016: Bone_girl_L foot
+    400018: Bone_girl_L forearm
+    400020: Bone_girl_L hand
+    400022: Bone_girl_L hip
+    400024: Bone_girl_L leg
+    400026: Bone_girl_L shoulder
+    400028: Bone_girl_L thigh
+    400030: Bone_girl_R arm
+    400032: Bone_girl_R foot
+    400034: Bone_girl_R forearm
+    400036: Bone_girl_R hand
+    400038: Bone_girl_R hip
+    400040: Bone_girl_R leg
+    400042: Bone_girl_R shoulder
+    400044: Bone_girl_R thigh
+    400046: Bone_girl_skirt1
+    400048: Bone_girl_skirt2
+    400050: Bone_girl_skirt3
+    400052: Bone_girl_skirt4
+    400054: Bone_girl_spine
+    4300000: avatar2_body
+    4300002: avatar2_head
+    7400000: Take 001
+    9500000: //RootNode
+    13700000: avatar2_body
+    13700002: avatar2_head
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    optimizeGameObjects: 0
+    motionNodeName: 
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 0
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
