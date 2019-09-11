@@ -1,10 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.Animations;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
-using UnityStandardAssets.Characters.ThirdPerson;
-using UnityStandardAssets.CrossPlatformInput;
 
 public class Player : MonoBehaviour
 {
@@ -31,6 +26,7 @@ public class Player : MonoBehaviour
     private State currentState;
     private RigidbodyFirstPersonController rigidbody;
     private bool isJumping, leaveJumpKey;
+    private CrowdManager[] crowds;
 
     void Start() {
         this.animator = GetComponent<Animator>();
@@ -38,6 +34,8 @@ public class Player : MonoBehaviour
         this.rigidbody = GetComponentInParent<RigidbodyFirstPersonController>();
         this.isJumping = false;
         this.leaveJumpKey = true;
+
+        
     }
 
     void Update() {
