@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net.Sockets;
 using System.Runtime.CompilerServices;
+using Assets.Script_Tools;
 using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
 
@@ -25,14 +27,19 @@ public class Player : MonoBehaviour {
 
     private Animator animator;
     private RigidbodyFirstPersonController rigidbody;
-    private bool leaveJumpKey, isJumping;
+    private CamBehaviour camera;
+    private bool leaveJumpKey, isJumping, onShootingSpot;
     private CrowdManager[] crowds;
     private float defJump;
 
     void Start() {
-        this.animator = GetComponent<Animator>();
+        this.animator = ObjectFinder.GetChild(transform, "Avatar").GetComponent<Animator>();
         this.rigidbody = GetComponentInParent<RigidbodyFirstPersonController>();
         rigidbody.movementSettings.RunMultiplier = 0;
+
+        Transform cameraObj = ObjectFinder.GetChild(transform, "MainCamera");
+        this.camera = cameraObj.GetComponent<CamBehaviour>();
+
         this.defJump = rigidbody.movementSettings.JumpForce;
         this.leaveJumpKey = true;
         this.isJumping = false;
@@ -40,9 +47,25 @@ public class Player : MonoBehaviour {
 
     void Update() {
         Animate();
+        GetIntoShootingPosition();
     }
 
-    void Animate() {
+    void OnCollisionEnter(Collision collision) {
+        //enter or leave shooting position
+        if (collision.gameObject.tag.Equals("Shooting Spot")) {
+            onShootingSpot = true;
+            print("on spot");
+        }
+    }
+
+    void OnCollisionExit(Collision collision) {
+        if (collision.gameObject.tag.Equals("Shooting Spot")) {
+            onShootingSpot = false;
+            print("not on spot");
+        }
+    }
+
+    private void Animate() {
         bool xMovement = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D);
         bool yMovement = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S);
         bool movement = xMovement || yMovement;
@@ -101,5 +124,9 @@ public class Player : MonoBehaviour {
         if (state != State.RUN) Accelerate(false);
 
         animator.SetInteger("state", state.GetValue());
+    }
+
+    private void GetIntoShootingPosition() {
+        if (Input.GetKeyDown(KeyCode.Tab) && onShootingSpot) camera.SwitchShootingPos();
     }
 }

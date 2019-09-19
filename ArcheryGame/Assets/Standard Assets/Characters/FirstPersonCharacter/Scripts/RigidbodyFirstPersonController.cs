@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
+using UnityStandardAssets.Utility;
 
 namespace UnityStandardAssets.Characters.FirstPerson
 {
@@ -82,13 +83,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
         public MouseLook mouseLook = new MouseLook();
         public AdvancedSettings advancedSettings = new AdvancedSettings();
 
-
         private Rigidbody m_RigidBody;
         private CapsuleCollider m_Capsule;
         private float m_YRotation;
         private Vector3 m_GroundContactNormal;
-        private bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded;
-
+        private bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded, mouseRot;
 
         public Vector3 Velocity
         {
@@ -118,16 +117,15 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
 
 
-        private void Start()
-        {
-            m_RigidBody = GetComponent<Rigidbody>();
+        private void Start() {
+        m_RigidBody = GetComponent<Rigidbody>();
             m_Capsule = GetComponent<CapsuleCollider>();
             mouseLook.Init (transform, cam.transform);
+            EnableMouseRotation(true);
         }
 
 
-        private void Update()
-        {
+        private void Update() {
             RotateView();
 
             if (CrossPlatformInputManager.GetButtonDown("Jump") && !m_Jump)
@@ -137,8 +135,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
 
 
-        private void FixedUpdate()
-        {
+        private void FixedUpdate() {
             GroundCheck();
             Vector2 input = GetInput();
 
@@ -222,21 +219,22 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
 
 
-        private void RotateView()
-        {
+        private void RotateView() {
+            if (!mouseRot) return;
+
             //avoids the mouse looking if the game is effectively paused
             if (Mathf.Abs(Time.timeScale) < float.Epsilon) return;
 
             // get the rotation before it's changed
             float oldYRotation = transform.eulerAngles.y;
 
-            mouseLook.LookRotation (transform, cam.transform);
+            mouseLook.LookRotation(transform, cam.transform);
 
             if (m_IsGrounded || advancedSettings.airControl)
             {
                 // Rotate the rigidbody velocity to match the new direction that the character is looking
                 Quaternion velRotation = Quaternion.AngleAxis(transform.eulerAngles.y - oldYRotation, Vector3.up);
-                m_RigidBody.velocity = velRotation*m_RigidBody.velocity;
+                m_RigidBody.velocity = velRotation * m_RigidBody.velocity;
             }
         }
 
@@ -261,5 +259,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 m_Jumping = false;
             }
         }
+
+        public void EnableMouseRotation(bool flag) { mouseRot = flag; }
     }
 }
