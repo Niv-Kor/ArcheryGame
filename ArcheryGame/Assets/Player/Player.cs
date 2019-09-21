@@ -27,44 +27,45 @@ public class Player : MonoBehaviour {
 
     private Animator animator;
     private RigidbodyFirstPersonController rigidbody;
-    private CamBehaviour camera;
+    private ShootingSessionManager shootSession;
     private bool leaveJumpKey, isJumping, onShootingSpot;
     private CrowdManager[] crowds;
     private float defJump;
 
-    void Start() {
-        this.animator = ObjectFinder.GetChild(transform, "Avatar").GetComponent<Animator>();
+    private void Start() {
+        this.animator = ObjectFinder.GetChild(gameObject, "Avatar").GetComponent<Animator>();
         this.rigidbody = GetComponentInParent<RigidbodyFirstPersonController>();
         rigidbody.movementSettings.RunMultiplier = 0;
 
-        Transform cameraObj = ObjectFinder.GetChild(transform, "MainCamera");
-        this.camera = cameraObj.GetComponent<CamBehaviour>();
+        GameObject cameraObj = ObjectFinder.GetChild(gameObject, "Camera Monitor");
+        this.shootSession = cameraObj.GetComponent<ShootingSessionManager>();
 
         this.defJump = rigidbody.movementSettings.JumpForce;
         this.leaveJumpKey = true;
         this.isJumping = false;
     }
 
-    void Update() {
+    private void Update() {
         Animate();
-        GetIntoShootingPosition();
+        EnterShootingStance();
     }
 
-    void OnCollisionEnter(Collision collision) {
+    private void OnCollisionEnter(Collision collision) {
         //enter or leave shooting position
         if (collision.gameObject.tag.Equals("Shooting Spot")) {
             onShootingSpot = true;
-            print("on spot");
         }
     }
 
-    void OnCollisionExit(Collision collision) {
+    private void OnCollisionExit(Collision collision) {
         if (collision.gameObject.tag.Equals("Shooting Spot")) {
             onShootingSpot = false;
-            print("not on spot");
         }
     }
 
+    /// <summary>
+    /// Animate the player as a response to the user's input.
+    /// </summary>
     private void Animate() {
         bool xMovement = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D);
         bool yMovement = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S);
@@ -87,16 +88,26 @@ public class Player : MonoBehaviour {
         else Jump(); //force jump while in mid-air
     }
 
+    /// <summary>
+    /// Apply the corrent animation for the current movement style.
+    /// </summary>
     private void Move() {
         if (Input.GetKey(KeyCode.LeftShift)) Run();
         else SetState(State.WALK);
     }
 
+    /// <summary>
+    /// Apply a running animation with an acceleration system.
+    /// </summary>
     private void Run() {
         SetState(State.RUN);
         Accelerate(true);
     }
 
+    /// <summary>
+    /// Accelerate slowly as the player runs.
+    /// </summary>
+    /// <param name="flag">True to enable or false to disable (drops immediately to 0 acceleration)</param>
     private void Accelerate(bool flag) {
         //slowly accelerate
         float acceleration = rigidbody.movementSettings.RunMultiplier;
@@ -114,11 +125,18 @@ public class Player : MonoBehaviour {
         rigidbody.movementSettings.JumpForce = defJump + defJump * jumpMultiplier;
     }
 
+    /// <summary>
+    /// Apply jump animation.
+    /// </summary>
     private void Jump() {
         SetState(State.JUMP);
         isJumping = true;
     }
 
+    /// <summary>
+    /// Set the state of the player manually.
+    /// </summary>
+    /// <param name="state"></param>
     private void SetState(State state) {
         //cancel acceleration
         if (state != State.RUN) Accelerate(false);
@@ -126,7 +144,10 @@ public class Player : MonoBehaviour {
         animator.SetInteger("state", state.GetValue());
     }
 
-    private void GetIntoShootingPosition() {
-        if (Input.GetKeyDown(KeyCode.Tab) && onShootingSpot) camera.SwitchShootingPos();
+    /// <summary>
+    /// Enter or exit shooting stance while standing on one of the map's shooting spots.
+    /// </summary>
+    private void EnterShootingStance() {
+        if (Input.GetKeyDown(KeyCode.Tab) && onShootingSpot) shootSession.ToggleShootingStance();
     }
 }

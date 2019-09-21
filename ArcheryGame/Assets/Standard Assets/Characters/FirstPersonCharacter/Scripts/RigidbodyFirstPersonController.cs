@@ -87,7 +87,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private CapsuleCollider m_Capsule;
         private float m_YRotation;
         private Vector3 m_GroundContactNormal;
-        private bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded, mouseRot;
+        private bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded;
+        private bool mouseLock, moveLock;
 
         public Vector3 Velocity
         {
@@ -116,14 +117,17 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
         }
 
-
         private void Start() {
-        m_RigidBody = GetComponent<Rigidbody>();
+            m_RigidBody = GetComponent<Rigidbody>();
             m_Capsule = GetComponent<CapsuleCollider>();
-            mouseLook.Init (transform, cam.transform);
+            RenewMouseLook();
             EnableMouseRotation(true);
+            EnableMovement(true);
         }
 
+        public void RenewMouseLook() {
+            mouseLook.Init(transform, cam.transform);
+        }
 
         private void Update() {
             RotateView();
@@ -134,8 +138,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
         }
 
-
         private void FixedUpdate() {
+            if (moveLock) return;
+
             GroundCheck();
             Vector2 input = GetInput();
 
@@ -205,27 +210,24 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
         }
 
-
         private Vector2 GetInput()
         {
-            
-            Vector2 input = new Vector2
-                {
+            Vector2 input = new Vector2 {
                     x = CrossPlatformInputManager.GetAxis("Horizontal"),
                     y = CrossPlatformInputManager.GetAxis("Vertical")
-                };
+            };
+
 			movementSettings.UpdateDesiredTargetSpeed(input);
             return input;
         }
 
-
         private void RotateView() {
-            if (!mouseRot) return;
+            if (mouseLock) return;
 
             //avoids the mouse looking if the game is effectively paused
             if (Mathf.Abs(Time.timeScale) < float.Epsilon) return;
 
-            // get the rotation before it's changed
+            //get the rotation before it's changed
             float oldYRotation = transform.eulerAngles.y;
 
             mouseLook.LookRotation(transform, cam.transform);
@@ -260,6 +262,12 @@ namespace UnityStandardAssets.Characters.FirstPerson
             }
         }
 
-        public void EnableMouseRotation(bool flag) { mouseRot = flag; }
+        private void OnEnable() {
+            RenewMouseLook();
+        }
+
+        public void EnableMouseRotation(bool flag) { mouseLock = !flag; }
+
+        public void EnableMovement(bool flag) { moveLock = !flag; }
     }
 }

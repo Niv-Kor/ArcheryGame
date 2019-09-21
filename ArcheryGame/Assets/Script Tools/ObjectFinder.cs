@@ -8,10 +8,18 @@ using UnityEngine;
 namespace Assets.Script_Tools {
     public class ObjectFinder
     {
-        public static Transform GetChild(Transform transform, String childName) {
+        /// <summary>
+        /// Get a child of a game object.
+        /// </summary>
+        /// <param name="obj">The parent game object</param>
+        /// <param name="childName">The child's name'</param>
+        /// <returns>The game object that is set as the parent's child.</returns>
+        public static GameObject GetChild(GameObject obj, String childName) {
+            Transform transform = obj.transform;
+
             for (int i = 0; i < transform.childCount; i++) {
-                Transform obj = transform.GetChild(i);
-                if (obj.name.Equals(childName)) return obj;
+                GameObject child = transform.GetChild(i).gameObject;
+                if (child.name.Equals(childName)) return child;
             }
 
             return null;
