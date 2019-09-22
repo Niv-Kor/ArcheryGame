@@ -14,13 +14,19 @@ public class ShootingSessionManager : MonoBehaviour
     private Animator animator;
     private RigidbodyFirstPersonController playerController;
     private CameraChanger cameraChanger;
-    private GameObject player;
+    private GameObject player, firstPersonCamera, pulledArrow;
     private bool isShooting, isPulling;
 
     private void Start() {
         this.animator = gameObject.GetComponent<Animator>();
         this.player = GameObject.FindGameObjectWithTag("Player");
         this.playerController = player.GetComponent<RigidbodyFirstPersonController>();
+
+        GameObject firstPersonObject = ObjectFinder.GetChild(gameObject, "First Person Camera");
+        this.firstPersonCamera = ObjectFinder.GetChild(firstPersonObject, "Camera");
+        GameObject equipment = ObjectFinder.GetChild(firstPersonCamera, "Equipment");
+        GameObject bow = ObjectFinder.GetChild(equipment, "Bow");
+        this.pulledArrow = ObjectFinder.GetChild(bow, "Arrow");
 
         GameObject camMonitor = GameObject.FindGameObjectWithTag("Camera Monitor");
         this.cameraChanger = camMonitor.GetComponent<CameraChanger>();
@@ -31,20 +37,21 @@ public class ShootingSessionManager : MonoBehaviour
     private void Update() {
         if (isShooting) {
             if (isPulling) {
-                //cancel pull
+                //withdraw
                 if (Input.GetMouseButtonDown(1)) {
                     EnterCamAnimation();
                     animator.SetBool(DRAW_PARAM, false);
                     isPulling = false;
                 }
-                //release
+                //shoot
                 else if (Input.GetMouseButtonUp(0)) {
+                    Shoot();
                     print("Release");
                     isPulling = false;
                 }
             }
             else {
-                //pull
+                //draw
                 if (Input.GetMouseButtonDown(0)) {
                     EnterCamAnimation();
                     animator.SetBool(DRAW_PARAM, true);
@@ -85,6 +92,14 @@ public class ShootingSessionManager : MonoBehaviour
         EnterCamAnimation();
         animator.SetBool(SHOOTING_PARAM, !isShooting);
         isShooting = !isShooting; //toggle shooting mode
+    }
+
+    private void Shoot() {
+        Transform arrowTransform = pulledArrow.transform;
+        GameObject arrowInstance = Instantiate(pulledArrow, arrowTransform.position, arrowTransform.rotation);
+        ProjectileArrow projArrow = arrowInstance.GetComponent<ProjectileArrow>();
+        pulledArrow.SetActive(false);
+        projArrow.enabled = true;
     }
 
     /// <returns>True if the player is at shooting stance at the moment.</returns>

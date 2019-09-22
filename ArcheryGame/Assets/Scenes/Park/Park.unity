@@ -126,13 +126,13 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 953550703}
   m_PrefabAsset: {fileID: 0}
---- !u!43 &22062644
+--- !u!43 &14878527
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-42470
+  m_Name: pb_Mesh-41962
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -1518,7 +1518,88 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 22062644}
+      objectReference: {fileID: 14878527}
+    - target: {fileID: 72233940, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4505828694294563982, guid: c6453f8e1f814744d8b94e5a6d1f9942,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2548643447247269162, guid: c6453f8e1f814744d8b94e5a6d1f9942,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.70707494
+      objectReference: {fileID: 0}
+    - target: {fileID: 2548643447247269162, guid: c6453f8e1f814744d8b94e5a6d1f9942,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.13744138
+      objectReference: {fileID: 0}
+    - target: {fileID: 2548643447247269162, guid: c6453f8e1f814744d8b94e5a6d1f9942,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.13235524
+      objectReference: {fileID: 0}
+    - target: {fileID: 2548643447247269162, guid: c6453f8e1f814744d8b94e5a6d1f9942,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.680909
+      objectReference: {fileID: 0}
+    - target: {fileID: 2548643447247269162, guid: c6453f8e1f814744d8b94e5a6d1f9942,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 92.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 2548643447247269162, guid: c6453f8e1f814744d8b94e5a6d1f9942,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2548643447247269162, guid: c6453f8e1f814744d8b94e5a6d1f9942,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 3215694624527990819, guid: c6453f8e1f814744d8b94e5a6d1f9942,
+        type: 3}
+      propertyPath: m_Direction
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3215694624527990819, guid: c6453f8e1f814744d8b94e5a6d1f9942,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3215694624527990819, guid: c6453f8e1f814744d8b94e5a6d1f9942,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 13400000, guid: 3aeb7dadc0c69d54d9e5777e9d5631f1,
+        type: 2}
+    - target: {fileID: 6739786434054121309, guid: c6453f8e1f814744d8b94e5a6d1f9942,
+        type: 3}
+      propertyPath: m_TagString
+      value: Avatar
+      objectReference: {fileID: 0}
+    - target: {fileID: 168122753, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 168122753, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 3}
+      propertyPath: m_Mass
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 168122753, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 3}
+      propertyPath: m_Constraints
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 168122754, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 3}
+      propertyPath: force
+      value: 2000
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 3}
 --- !u!1 &170076733
@@ -1594,7 +1675,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: -1.7014118e+38, y: 4.0389676e-28, z: 0, w: 1.8e-43}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 3e-45}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0

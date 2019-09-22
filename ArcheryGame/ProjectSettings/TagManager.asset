@@ -8,6 +8,7 @@ TagManager:
   - Crowd
   - Shooting Spot
   - Camera Monitor
+  - Avatar
   layers:
   - Default
   - TransparentFX
