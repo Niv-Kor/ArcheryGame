@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using Assets.Script_Tools;
 using UnityEngine;
+using UnityEngine.Experimental.PlayerLoop;
 
 public class LockedCameraState : StateMachineBehaviour
 {
-    [SerializeField] private CameraChanger.PlayerCamera exitCamera;
+    [SerializeField] private CameraTagSystem.Tag exitCamera;
     [SerializeField] private bool disableAnimatorOnExit;
     [SerializeField] private bool zoomOnExit;
 
@@ -13,12 +14,12 @@ public class LockedCameraState : StateMachineBehaviour
 
     private void OnEnable() {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        GameObject camera = ObjectFinder.GetChild(player, "Camera Monitor");
-        this.shootSession = camera.GetComponent<ShootingSessionManager>();
+        GameObject monitor = ObjectFinder.GetChild(player, "Player Monitor");
+        this.shootSession = monitor.GetComponent<ShootingSessionManager>();
     }
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        shootSession.EnterCamAnimation();
+        shootSession.EnterCamAnimation(true);
     }
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {

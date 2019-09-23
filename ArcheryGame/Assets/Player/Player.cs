@@ -5,8 +5,10 @@ using Assets.Script_Tools;
 using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
 
-public class Player : MonoBehaviour {
-    private class State {
+public class Player : MonoBehaviour
+{
+    private class State
+    {
         public static readonly State IDLE = new State(0);
         public static readonly State WALK = new State(1);
         public static readonly State RUN = new State(2);
@@ -37,7 +39,7 @@ public class Player : MonoBehaviour {
         this.rigidbody = GetComponentInParent<RigidbodyFirstPersonController>();
         rigidbody.movementSettings.RunMultiplier = 0;
 
-        GameObject cameraObj = ObjectFinder.GetChild(gameObject, "Camera Monitor");
+        GameObject cameraObj = GameObject.FindWithTag("Player Monitor");
         this.shootSession = cameraObj.GetComponent<ShootingSessionManager>();
 
         this.defJump = rigidbody.movementSettings.JumpForce;

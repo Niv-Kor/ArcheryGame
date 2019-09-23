@@ -7,8 +7,10 @@ TagManager:
   - Audience
   - Crowd
   - Shooting Spot
-  - Camera Monitor
   - Avatar
+  - Arrow
+  - Camera
+  - Player Monitor
   layers:
   - Default
   - TransparentFX

@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 23766466454056684}
   - component: {fileID: -7778152461483534182}
   - component: {fileID: 1148827567520171087}
+  - component: {fileID: 1057449463999106634}
+  - component: {fileID: 8942111105858429780}
   m_Layer: 0
   m_Name: prefab_arrow_modern_5
   m_TagString: Untagged
@@ -27,13 +29,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1392634132429328}
-  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0.38329062, y: 0.3706041, z: 0}
-  m_LocalScale: {x: 0.7974616, y: 0.7974618, z: 0.79746366}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33483735027072232
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -107,6 +109,34 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.01
-  m_Height: 0.44
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.66, z: 0.00017233472}
+  m_Height: 0.76
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0.58}
+--- !u!114 &1057449463999106634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1392634132429328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94e999d96dbd3a84b99b64ffa16dd70b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  straightTime: 2
+  force: 2000
+--- !u!114 &8942111105858429780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1392634132429328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf26740c47e04d14ca1530967d9d2e05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  center: {x: 0, y: 0.72, z: 0}
+  visualizeSphere: 0
