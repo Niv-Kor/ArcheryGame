@@ -6,7 +6,7 @@ using UnityEngine.Experimental.PlayerLoop;
 
 public class LockedCameraState : StateMachineBehaviour
 {
-    [SerializeField] private CameraTagSystem.Tag exitCamera;
+    [SerializeField] private CameraEnabler.Tag exitCamera;
     [SerializeField] private bool disableAnimatorOnExit;
     [SerializeField] private bool zoomOnExit;
 

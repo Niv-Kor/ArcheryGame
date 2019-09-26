@@ -12,16 +12,14 @@ public class ShootingSessionManager : MonoBehaviour
     private readonly string DRAW_PARAM = "draw";
     private readonly string SHOOT_PARAM = "shoot";
 
-    private readonly Vector3 ARROW_CAM_ROTATION = new Vector3(-183.119f, -181.006f, 120.117f);
-
     private Animator animator;
     private RigidbodyFirstPersonController playerController;
     private CameraManager camManager;
     private GameObject player, pulledArrowObject, pulledArrow;
+    private GameObject arrowInstanceObj, arrowInstance, projectileCam;
     private bool isShooting, isPulling;
     private ProjectileManager projManager;
-    private GameObject arrowInstance, projectileCam;
-
+    
     private void Start() {
         this.animator = gameObject.GetComponent<Animator>();
         this.player = GameObject.FindGameObjectWithTag("Player");
@@ -42,7 +40,12 @@ public class ShootingSessionManager : MonoBehaviour
     }
 
     private void Update() {
-        if (isShooting && !IsAnimating()) {
+        Animate();
+        AlignArrowInstance();
+    }
+
+    private void Animate() {
+        if (isShooting && !IsAnimating() && !camManager.FollowingArrow()) {
             if (isPulling) {
                 //withdraw
                 if (Input.GetMouseButtonDown(1)) {
@@ -57,6 +60,7 @@ public class ShootingSessionManager : MonoBehaviour
                 }
                 //shoot
                 else if (Input.GetMouseButtonUp(0)) {
+                    print("shoot");
                     EnterCamAnimation(true);
                     animator.SetBool(SHOOT_PARAM, true);
                     isPulling = false;
@@ -77,19 +81,12 @@ public class ShootingSessionManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Exit an animation of the camera and disable the animator,
-    /// in order to asset the player with full mouse and movement control.
-    /// </summary>
-    /// <param name="disableAnimatorOnExit">True to disable the animator and apply full game control</param>
-    /// <param name="exitToCamera">The camera to change to</param>
-    /// <param name="zoomOnExit">True to zoom in with the first person camera</param>
-    public void ExitCamAnimation(bool disableAnimatorOnExit, CameraTagSystem.Tag exitToCamera, bool zoomOnExit) {
-        camManager.ChangeCam(exitToCamera);
-        animator.enabled = !disableAnimatorOnExit;
-        playerController.EnableMouseRotation(true);
-        playerController.EnableMovement(!isShooting);
-        camManager.SetZoom(zoomOnExit);
+    private void AlignArrowInstance() {
+        if (arrowInstanceObj != null) {
+            Transform arrowTransform = pulledArrowObject.transform;
+            arrowInstanceObj.transform.position = arrowTransform.position;
+            arrowInstanceObj.transform.rotation = arrowTransform.rotation;
+        }
     }
 
     /// <summary>
@@ -103,6 +100,22 @@ public class ShootingSessionManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Exit an animation of the camera and disable the animator,
+    /// in order to asset the player with full mouse and movement control.
+    /// </summary>
+    /// <param name="disableAnimatorOnExit">True to disable the animator and apply full game control</param>
+    /// <param name="exitToCamera">The camera to change to</param>
+    /// <param name="zoomOnExit">True to zoom in with the first person camera</param>
+    public void ExitCamAnimation(bool disableAnimatorOnExit, CameraEnabler.Tag exitToCamera, bool zoomOnExit) {
+        print("exit cam animation goto " + exitToCamera);
+        camManager.ChangeCam(exitToCamera);
+        animator.enabled = !disableAnimatorOnExit;
+        playerController.EnableMouseRotation(true);
+        playerController.EnableMovement(!isShooting);
+        camManager.SetZoom(zoomOnExit);
+    }
+    
+    /// <summary>
     /// Enter or exit shooting stance while standing on one of the map's shooting spots.
     /// </summary>
     public void ToggleShootingStance() {
@@ -112,26 +125,36 @@ public class ShootingSessionManager : MonoBehaviour
     }
 
     public void Shoot() {
+        animator.SetBool(SHOOT_PARAM, false);
+        animator.SetBool(DRAW_PARAM, false);
+        ExitCamAnimation(false, CameraEnabler.Tag.Arrow, false);
         arrowInstance.SetActive(true);
         pulledArrowObject.SetActive(false);
         arrowInstance.GetComponent<MeshRenderer>().enabled = true; //display the arrow
         arrowInstance.GetComponent<ProjectileArrow>().enabled = true; //release the arrow
+
+        //dispose arrow instance
+        arrowInstanceObj = null;
+        arrowInstance = null;
+        projectileCam = null;
     }
 
     private void InstantiateArrow() {
-        Transform arrowTransform = pulledArrowObject.transform;
-        GameObject arrowInstanceObj = Instantiate(pulledArrowObject);
+        this.arrowInstanceObj = Instantiate(pulledArrowObject);
         arrowInstanceObj.transform.localScale *= 1.8f;
-        arrowInstanceObj.transform.position = arrowTransform.position;
-        arrowInstanceObj.transform.rotation = arrowTransform.rotation;
+        AlignArrowInstance();
 
         this.arrowInstance = ObjectFinder.GetChild(arrowInstanceObj, "Stick");
         this.projectileCam = ObjectFinder.GetChild(arrowInstance, "Arrow Camera");
-        projectileCam.transform.Rotate(0f, -180f, 0f);
-
+        arrowInstance.GetComponent<MeshRenderer>().enabled = false;
         projManager.Spawn(arrowInstanceObj);
         camManager.AddCam(projectileCam);
-        arrowInstance.GetComponent<MeshRenderer>().enabled = false;
+        projectileCam.SetActive(true);
+        projectileCam.GetComponent<ArrowCameraAligner>().enabled = true;
+    }
+
+    public void LoadArrow() {
+        pulledArrowObject.SetActive(true);
     }
 
     /// <returns>True if the player is at shooting stance at the moment.</returns>

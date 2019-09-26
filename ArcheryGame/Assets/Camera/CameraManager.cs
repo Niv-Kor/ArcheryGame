@@ -15,7 +15,7 @@ public class CameraManager : MonoBehaviour
     private static readonly float DEFAULT_FIELD_OF_VIEW = 60;
 
     private RigidbodyFirstPersonController playerController;
-    private CameraTagSystem.Tag currentCameraTag;
+    private CameraEnabler.Tag currentCameraTag;
     private Camera currentCamera;
     private ProjectileManager projManager;
 
@@ -24,19 +24,21 @@ public class CameraManager : MonoBehaviour
         GameObject monitor = GameObject.FindWithTag("Player Monitor");
         this.playerController = player.GetComponent<RigidbodyFirstPersonController>();
         this.projManager = monitor.GetComponent<ProjectileManager>();
-        this.currentCameraTag = CameraTagSystem.Tag.None;
-        ChangeCam(CameraTagSystem.Tag.ThirdPerson);
+        this.currentCameraTag = CameraEnabler.Tag.None;
+        ChangeCam(CameraEnabler.Tag.ThirdPerson);
     }
 
     /// <summary>
     /// Change the main camera of the game.
     /// </summary>
     /// <param name="cam">The camera to change into</param>
-    public void ChangeCam(CameraTagSystem.Tag camTag, GameObject cam=null) {
-        if (camTag == CameraTagSystem.Tag.None || camTag == currentCameraTag) return;
+    public void ChangeCam(CameraEnabler.Tag camTag, GameObject cam=null) {
+        print("goto " + camTag);
+
+        if (camTag == CameraEnabler.Tag.None || camTag == currentCameraTag) return;
 
         //looking for the last spawned arrow's camera
-        if (camTag == CameraTagSystem.Tag.Arrow && cam == null) {
+        if (camTag == CameraEnabler.Tag.Arrow && cam == null) {
             GameObject lastSpawnedArrow = projManager.GetLastSpawned();
 
             if (lastSpawnedArrow != null) {
@@ -44,7 +46,7 @@ public class CameraManager : MonoBehaviour
                 GameObject arrowCam = ObjectFinder.GetChild(arrowStick, "Arrow Camera");
                 ChangeCam(camTag, arrowCam);
             }
-            else ChangeCam(CameraTagSystem.Tag.None);
+            else ChangeCam(CameraEnabler.Tag.None);
 
             return;
         }
@@ -53,17 +55,28 @@ public class CameraManager : MonoBehaviour
 
         //iterate over all cameras
         foreach (GameObject obj in cameraObjects) {
-            CameraTagSystem.Tag ofTag = obj.GetComponent<CameraTagSystem>().tag;
+            CameraEnabler.Tag ofTag = obj.GetComponent<CameraEnabler>().tag;
             bool correctCam = ofTag == camTag || obj == cam;
-            obj.SetActive(correctCam);
-            TagAsMain(obj, correctCam);
+            obj.GetComponent<CameraEnabler>().Activate(correctCam);
 
             if (correctCam) {
                 currentCameraTag = camTag;
                 currentCamera = obj.GetComponent<Camera>();
-                if (camTag != CameraTagSystem.Tag.Arrow) playerController.cam = currentCamera;
+                if (camTag != CameraEnabler.Tag.Arrow) playerController.cam = currentCamera;
             }
         }
+    }
+
+    public GameObject GetCam(CameraEnabler.Tag camTag) {
+        if (camTag == CameraEnabler.Tag.Arrow) return projManager.GetLastSpawned();
+        else {
+            foreach (GameObject obj in cameraObjects) {
+                CameraEnabler.Tag ofTag = obj.GetComponent<CameraEnabler>().tag;
+                if (ofTag == camTag) return obj;
+            }
+        }
+
+        return null;
     }
 
     public void AddCam(GameObject cam) {
@@ -74,20 +87,36 @@ public class CameraManager : MonoBehaviour
         cameraObjects.Remove(cam);
     }
 
-    private void TagAsMain(GameObject cam, bool flag) {
-        string tag = flag ? "MainCamera" : "Camera";
-        cam.tag = tag;
-    }
-
     /// <summary>
     /// Zoom with the first person camera.
     /// </summary>
     /// <param name="flag">True to zoom in or false to zoom out back to default</param>
     public void SetZoom(bool flag) {
         if (currentCamera == null) return;
+        currentCamera.fieldOfView = flag ? GetPhysicalZoom() : DEFAULT_FIELD_OF_VIEW;
+    }
 
-        float multiplier = flag ? zoomPercent : 0;
-        float subtraction = (DEFAULT_FIELD_OF_VIEW / 100) * multiplier;
-        currentCamera.fieldOfView = DEFAULT_FIELD_OF_VIEW - subtraction;
+    /// <summary>
+    /// Zoom with the first person camera.
+    /// </summary>
+    /// <param name="flag">True to zoom in or false to zoom out back to default</param>
+    /// <param name="cam,">The camera to zoom in or out</param>
+    public void SetZoom(bool flag, Camera cam=null) {
+        Camera zoomedCamera = (cam != null) ? cam : currentCamera;
+        if (currentCamera == null) return;
+
+        zoomedCamera.fieldOfView = flag ? GetPhysicalZoom() : DEFAULT_FIELD_OF_VIEW;
+    }
+
+    /// <summary>
+    /// Get the maximal zoom of a camera (based on the "Zoom Percent" field).
+    /// </summary>
+    public float GetPhysicalZoom() {
+        float subtraction = (DEFAULT_FIELD_OF_VIEW / 100) * zoomPercent;
+        return DEFAULT_FIELD_OF_VIEW - subtraction;
+    }
+
+    public bool FollowingArrow() {
+        return currentCameraTag == CameraEnabler.Tag.Arrow;
     }
 }

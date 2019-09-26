@@ -58,7 +58,7 @@ AnimatorStateTransition:
   m_PrefabAsset: {fileID: 0}
   m_Name: 
   m_Conditions:
-  - m_ConditionMode: 1
+  - m_ConditionMode: 2
     m_ConditionEvent: shoot
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
@@ -67,9 +67,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.018095285
-  m_TransitionOffset: 0.0045238147
-  m_ExitTime: 1.0234288
+  m_TransitionDuration: 0.13001408
+  m_TransitionOffset: 0
+  m_ExitTime: 0.2176134
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -259,7 +259,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Release
-  m_Speed: 3
+  m_Speed: 2
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -6668641115213087242}
@@ -567,7 +567,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 157e82a83667c2c458bffb7721188906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  exitCamera: 4
+  exitCamera: 2
   disableAnimatorOnExit: 1
   zoomOnExit: 1
 --- !u!1102 &3234289979576449296
@@ -610,6 +610,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 690080e9d5118ac4baaddc51e86c2d57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  exitAfterPercentage: 90
 --- !u!1101 &5457577257270781423
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -707,7 +708,7 @@ AnimatorStateMachine:
     m_Position: {x: 610, y: 180, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -3949920358235334628}
-    m_Position: {x: 610, y: 470, z: 0}
+    m_Position: {x: 620, y: 480, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []

@@ -5,7 +5,11 @@ using UnityEngine;
 
 public class ShootState : StateMachineBehaviour
 {
+    [SerializeField] [Range(0, 100)] private float exitAfterPercentage;
+
     private ShootingSessionManager shootSession;
+    private float time, changeTime;
+    private bool shot;
 
     private void OnEnable() {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -14,11 +18,19 @@ public class ShootState : StateMachineBehaviour
     }
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        Debug.Log("enter Enter");
+        this.time = 0;
+        this.changeTime = stateInfo.length * exitAfterPercentage / 100;
+        shot = false;
     }
 
-    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        Debug.Log("enter Exit");
-        shootSession.Shoot();
+    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+        if (shot) return;
+
+        time += Time.deltaTime;
+        if (time >= changeTime) {
+            shot = true;
+            time = 0; //init for next time
+            shootSession.Shoot();
+        }
     }
 }
