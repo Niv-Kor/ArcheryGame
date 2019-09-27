@@ -19,6 +19,6 @@ public class ProjectileManager : MonoBehaviour
     }
 
     public void DestroyLastSpawned() {
-        projectiles.Pop();
+        if (projectiles.Count > 0) projectiles.Pop();
     }
 }
