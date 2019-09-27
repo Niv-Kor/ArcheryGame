@@ -107,7 +107,6 @@ public class ShootingSessionManager : MonoBehaviour
     /// <param name="exitToCamera">The camera to change to</param>
     /// <param name="zoomOnExit">True to zoom in with the first person camera</param>
     public void ExitCamAnimation(bool disableAnimatorOnExit, CameraEnabler.Tag exitToCamera, bool zoomOnExit) {
-        print("exit cam animation goto " + exitToCamera);
         camManager.ChangeCam(exitToCamera);
         animator.enabled = !disableAnimatorOnExit;
         playerController.EnableMouseRotation(true);

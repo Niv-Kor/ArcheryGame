@@ -33,8 +33,6 @@ public class CameraManager : MonoBehaviour
     /// </summary>
     /// <param name="cam">The camera to change into</param>
     public void ChangeCam(CameraEnabler.Tag camTag, GameObject cam=null) {
-        print("goto " + camTag);
-
         if (camTag == CameraEnabler.Tag.None || camTag == currentCameraTag) return;
 
         //looking for the last spawned arrow's camera

@@ -19,7 +19,8 @@ public class ProjectileArrow : MonoBehaviour
     private ProjectileManager projManager;
     private ShootingSessionManager shootManager;
     private Vector3 hitPoint;
-    private bool hit, flyForever;
+    private float force;
+    private bool hit;
 
     private void OnEnable() {
         //switch to the arrow camera view
@@ -39,18 +40,7 @@ public class ProjectileArrow : MonoBehaviour
         rigidbody.isKinematic = false;
 
         //launch the arrow at the direction of the sight
-
-        //Vector3 archersParadox = new Vector3(.3f, -.4f, 0f);
-        //rigidbody.AddRelativeForce((-transform.forward + archersParadox) * force);
-
-        float force;
         RotateTowardsTarget(out force, out hitPoint);
-        hitPoint.z -= transform.lossyScale.z * .75f; //shorten the distance by 70% of the arrow length
-
-        //rigidbody.AddRelativeForce(-transform.forward * defaultForce);
-
-        //clean y velocity so the arrow won't yaw
-        //rigidbody.velocity = new Vector3(rigidbody.velocity.x, 0f, rigidbody.velocity.z);
     }
 
     private void Update() {
@@ -89,7 +79,7 @@ public class ProjectileArrow : MonoBehaviour
     }
 
     private void OnCollisionEnter(Collision collision) {
-        print("colliding with game object " + collision.gameObject.name + " of layer " + collision.gameObject.layer + " whose name is " + LayerMask.LayerToName(collision.gameObject.layer));
+        print("colliding with game object " + collision.gameObject.name + " whose name is " + LayerMask.LayerToName(collision.gameObject.layer));
 
         if (!hit && CollisionIsAllowed(collision)) {
             hit = true;
@@ -112,8 +102,6 @@ public class ProjectileArrow : MonoBehaviour
     }
 
     private bool CollisionIsAllowed(Collision collision) {
-        print("comparing " + (1 << collision.gameObject.layer) + " and " + collisionsOnLayer.value);
-        print("which is " + ((1 << collision.gameObject.layer) == collisionsOnLayer.value));
         return (1 << collision.gameObject.layer) == collisionsOnLayer.value;
     }
 }

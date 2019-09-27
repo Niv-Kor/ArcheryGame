@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0de965f2e710c1c489ead8e62cd25da0, type: 3}
+  m_Name: archery_target  1 Painting Data
+  m_EditorClassIdentifier: 
+  hullData: {fileID: 11400000, guid: bfed8a48f39f0e74a893df987c170a30, type: 2}
+  sourceMesh: {fileID: 4300000, guid: e5ae40c1958ef7c469a18e4f44abe21a, type: 3}
+  activeHull: 0
+  faceThickness: 0.1
+  hulls:
+  - name: Golden Ring
+    isVisible: 1
+    type: 3
+    colour: {r: 1, g: 0.9022348, b: 0, a: 0.3}
+    material: {fileID: 13400000, guid: 3aeb7dadc0c69d54d9e5777e9d5631f1, type: 2}
+    isTrigger: 0
+    selectedFaces: 
+    collisionMesh: {fileID: 0}
+    faceCollisionMesh: {fileID: 0}
+    collisionBox:
+      m_Center: {x: 0, y: 0, z: 0}
+      m_Extent: {x: 0, y: 0, z: 0}
+    hasColliderError: 0
+    numColliderFaces: 0
