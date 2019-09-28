@@ -27,6 +27,6 @@ public class ProjectileManager : MonoBehaviour
     /// Remove the last spawnd arrow from the stack.
     /// </summary>
     public void DestroyLastSpawned() {
-        if (projectiles.Count > 0) projectiles.Pop();
+        projectiles.Pop();
     }
 }

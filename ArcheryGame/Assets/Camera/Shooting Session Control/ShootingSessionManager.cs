@@ -64,6 +64,7 @@ public class ShootingSessionManager : MonoBehaviour
                 }
                 //shoot
                 else if (Input.GetMouseButtonUp(0)) {
+                    print("shoot");
                     EnterCamAnimation(true);
                     animator.SetBool(SHOOT_PARAM, true);
                     isPulling = false;
@@ -72,7 +73,6 @@ public class ShootingSessionManager : MonoBehaviour
             else {
                 //draw
                 if (Input.GetMouseButtonDown(0)) {
-                    LoadArrow();
                     InstantiateArrow();
 
                     //enable animation

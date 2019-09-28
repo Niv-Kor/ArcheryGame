@@ -8,12 +8,9 @@ public class WindMaker : MonoBehaviour
 
     private Cloth cloth;
     private float wildTime;
-    private int stiffnessMultiplier;
 
     void Start() {
         this.cloth = GetComponent<Cloth>();
-        this.stiffnessMultiplier = 1;
-        cloth.stretchingStiffness = .5f;
     }
 
     void Update() {
@@ -21,10 +18,7 @@ public class WindMaker : MonoBehaviour
 
         if (wildTime <= 0) {
             wildTime = 5 - wildMovement;
-            cloth.stretchingStiffness += .05f * stiffnessMultiplier;
-
-            if (cloth.stretchingStiffness >= .7f || cloth.stretchingStiffness <= .5f)
-                stiffnessMultiplier *= -1;
-        }
+            cloth.useGravity = !cloth.useGravity;
+        }      
     }
 }
