@@ -21,7 +21,9 @@ public class ProjectileArrow : MonoBehaviour
     [Tooltip("The layer that the arrow can collide with")]
     [SerializeField] private LayerMask collisionsOnLayer;
 
-    private Rigidbody rigidbody;
+    [SerializeField] public Vector3 sightHit;
+
+    private Rigidbody rigidBody;
     private CameraManager camManager;
     private GameObject arrowCamera;
     private ProjectileManager projManager;
@@ -30,11 +32,13 @@ public class ProjectileArrow : MonoBehaviour
     private bool hit;
 
     private void OnEnable() {
+        this.hit = false;
+
         //enable the arrow's collider
         GetComponent<CapsuleCollider>().enabled = true;
-        this.rigidbody = GetComponent<Rigidbody>();
-        rigidbody.velocity = Vector3.zero;
-        rigidbody.isKinematic = false;
+        this.rigidBody = GetComponent<Rigidbody>();
+        rigidBody.velocity = Vector3.zero;
+        rigidBody.isKinematic = false;
 
         //switch to the arrow camera view
         GameObject monitor = GameObject.FindGameObjectWithTag("Player Monitor");
@@ -42,17 +46,17 @@ public class ProjectileArrow : MonoBehaviour
         this.camManager = monitor.GetComponent<CameraManager>();
         this.projManager = monitor.GetComponent<ProjectileManager>();
 
-        //disable mouse look
-        this.shootManager = monitor.GetComponent<ShootingSessionManager>();
-        shootManager.EnterCamAnimation(true);      
-
         //rotate the arrow at the direction of the sight
-        hitPoint = RotateTowardsTarget();
+        this.hitPoint = RotateTowardsTarget();
 
         //shorten hit distance by the length of the arrow
         float arrowLength = GetComponent<MeshRenderer>().bounds.size.z * (1 - thrustDepthPercent);
         Vector3 directionVector = (hitPoint - transform.position).normalized;
         hitPoint -= directionVector * arrowLength;
+
+        //disable mouse look
+        this.shootManager = monitor.GetComponent<ShootingSessionManager>();
+        shootManager.EnterCamAnimation(true);
     }
 
     private void Update() {
@@ -67,16 +71,12 @@ public class ProjectileArrow : MonoBehaviour
     }
 
     private void OnCollisionEnter(Collision collision) {
-        print("trigger collision");
-        print("colliding with game object " + collision.gameObject.name + " whose layer is " + LayerMask.LayerToName(collision.gameObject.layer));
-
         if (!hit && CollisionIsAllowed(collision)) {
             hit = true;
-            print("Arrow hit " + collision.gameObject.name + " (tagged as \"" + collision.gameObject.tag + "\")");
 
             //stick to the target
-            rigidbody.constraints = RigidbodyConstraints.FreezeAll;
-            rigidbody.isKinematic = true;
+            rigidBody.constraints = RigidbodyConstraints.FreezeAll;
+            rigidBody.isKinematic = true;
         }
     }
 
@@ -86,25 +86,20 @@ public class ProjectileArrow : MonoBehaviour
     /// <returns>The point that the arrow should hit.</returns>
     private Vector3 RotateTowardsTarget() {
         Transform camTransform = Camera.main.transform;
-        Ray ray = new Ray(camTransform.position, Camera.main.transform.forward);
-        float distance = defaultForce;
+        print("cam: " + Camera.main.name);
+        Ray ray = new Ray(camTransform.position, camTransform.forward);
+        Vector3 hitP = Vector3.zero;
 
         //find direction
-        if (Physics.Raycast(ray, out RaycastHit rayHit, Mathf.Infinity, collisionsOnLayer) && rayHit.collider != null) {
-            hitPoint = rayHit.point;
-            print("hit " + rayHit.collider.gameObject.name);
-        }
-        else {
-            print("not hit");
-            hitPoint = ray.GetPoint(distance);
-            hit = true;
+        if (Physics.Raycast(ray, out RaycastHit rayHit) && rayHit.collider != null) {
+            hitP = rayHit.point;
         }
 
         //rotate
-        Vector3 direction = (hitPoint - transform.position).normalized;
+        Vector3 direction = (hitP - transform.position).normalized;
         transform.rotation = Quaternion.LookRotation(direction);
 
-        return hitPoint;
+        return hitP;
     }
 
     /// <summary>
