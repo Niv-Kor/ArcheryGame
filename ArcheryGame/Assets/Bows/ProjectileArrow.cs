@@ -26,7 +26,6 @@ public class ProjectileArrow : MonoBehaviour
 
     private void OnEnable() {
 <<<<<<< HEAD
-<<<<<<< HEAD
         this.hit = false;
 
         //enable the arrow's collider
@@ -37,15 +36,12 @@ public class ProjectileArrow : MonoBehaviour
 
 =======
 >>>>>>> parent of dcc4155... Fixed arrow shooting and targets
-=======
->>>>>>> parent of dcc4155... Fixed arrow shooting and targets
         //switch to the arrow camera view
         GameObject monitor = GameObject.FindGameObjectWithTag("Player Monitor");
         this.arrowCamera = ObjectFinder.GetChild(gameObject, "Arrow Camera");
         this.camManager = monitor.GetComponent<CameraManager>();
         this.projManager = monitor.GetComponent<ProjectileManager>();
 
-<<<<<<< HEAD
 <<<<<<< HEAD
         //rotate the arrow at the direction of the sight
         this.hitPoint = RotateTowardsTarget();
@@ -94,32 +90,12 @@ public class ProjectileArrow : MonoBehaviour
     }
 
     private void Update() {
-=======
-        //disable mouse look
-        this.shootManager = monitor.GetComponent<ShootingSessionManager>();
-        shootManager.EnterCamAnimation(true);
-
-        //enable the arrow's collider
-        GetComponent<CapsuleCollider>().enabled = true;
-        this.rigidbody = GetComponent<Rigidbody>();
-        rigidbody.velocity = Vector3.zero;
-        rigidbody.isKinematic = false;
-
-        //launch the arrow at the direction of the sight
-        RotateTowardsTarget(out force, out hitPoint);
-    }
-
-    private void Update() {
->>>>>>> parent of dcc4155... Fixed arrow shooting and targets
         transform.position = Vector3.MoveTowards(transform.position, hitPoint, Time.deltaTime * defaultForce);
         //transform.rotation = Quaternion.LookRotation(rigidbody.velocity); //pitch
 
         if (hit) {
             noHitEscortTime -= Time.deltaTime;
             if (noHitEscortTime <= 0) Finish();
-<<<<<<< HEAD
->>>>>>> parent of dcc4155... Fixed arrow shooting and targets
-=======
 >>>>>>> parent of dcc4155... Fixed arrow shooting and targets
         }
     }
@@ -156,11 +132,8 @@ public class ProjectileArrow : MonoBehaviour
     }
 
 <<<<<<< HEAD
-<<<<<<< HEAD
         return hitP;
 =======
-=======
->>>>>>> parent of dcc4155... Fixed arrow shooting and targets
     private void OnCollisionEnter(Collision collision) {
         print("colliding with game object " + collision.gameObject.name + " whose name is " + LayerMask.LayerToName(collision.gameObject.layer));
 
@@ -172,9 +145,6 @@ public class ProjectileArrow : MonoBehaviour
             rigidbody.constraints = RigidbodyConstraints.FreezeAll;
             rigidbody.isKinematic = true;
         }
-<<<<<<< HEAD
->>>>>>> parent of dcc4155... Fixed arrow shooting and targets
-=======
 >>>>>>> parent of dcc4155... Fixed arrow shooting and targets
     }
 
