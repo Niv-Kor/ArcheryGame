@@ -9,13 +9,20 @@ using Object = System.Object;
 
 public class ProjectileArrow : MonoBehaviour
 {
+    [Tooltip("The force in which the arrow is launched")]
     [SerializeField] private float defaultForce = 100f;
     [SerializeField] private float noHitEscortTime = 2.5f;
+
+    [Tooltip("The time it takes the camera to finish escorting the arrow after launch")]
+    [SerializeField] private float escortTime = 2.5f;
+
+    [Tooltip("The percent of the arrow that will stuck in the target")]
+    [SerializeField] [Range(0, 1)] private float thrustDepthPercent = .15f;
+
+    [Tooltip("The layer that the arrow can collide with")]
     [SerializeField] private LayerMask collisionsOnLayer;
 
-    [SerializeField] public Vector3 sightHit;
-
-    private Rigidbody rigidBody;
+    private Rigidbody rigidbody;
     private CameraManager camManager;
     private GameObject arrowCamera;
     private ProjectileManager projManager;
@@ -25,38 +32,41 @@ public class ProjectileArrow : MonoBehaviour
     private bool hit;
 
     private void OnEnable() {
-<<<<<<< HEAD
-        this.hit = false;
-
         //enable the arrow's collider
         GetComponent<CapsuleCollider>().enabled = true;
-        this.rigidBody = GetComponent<Rigidbody>();
-        rigidBody.velocity = Vector3.zero;
-        rigidBody.isKinematic = false;
+        this.rigidbody = GetComponent<Rigidbody>();
+        rigidbody.velocity = Vector3.zero;
+        rigidbody.isKinematic = false;
 
-=======
->>>>>>> parent of dcc4155... Fixed arrow shooting and targets
         //switch to the arrow camera view
         GameObject monitor = GameObject.FindGameObjectWithTag("Player Monitor");
         this.arrowCamera = ObjectFinder.GetChild(gameObject, "Arrow Camera");
         this.camManager = monitor.GetComponent<CameraManager>();
         this.projManager = monitor.GetComponent<ProjectileManager>();
 
-<<<<<<< HEAD
+        //disable mouse look
+        this.shootManager = monitor.GetComponent<ShootingSessionManager>();
+        shootManager.EnterCamAnimation(true);
+        shootManager.EnterCamAnimation(true);
+
+        //enable the arrow's collider
+        GetComponent<CapsuleCollider>().enabled = true;
+        this.rigidbody = GetComponent<Rigidbody>();
+        rigidbody.velocity = Vector3.zero;
+        rigidbody.isKinematic = false;
+
         //rotate the arrow at the direction of the sight
-        this.hitPoint = RotateTowardsTarget();
+        hitPoint = RotateTowardsTarget();
 
         //shorten hit distance by the length of the arrow
         float arrowLength = GetComponent<MeshRenderer>().bounds.size.z * (1 - thrustDepthPercent);
         Vector3 directionVector = (hitPoint - transform.position).normalized;
         hitPoint -= directionVector * arrowLength;
-
-        //disable mouse look
-        this.shootManager = monitor.GetComponent<ShootingSessionManager>();
-        shootManager.EnterCamAnimation(true);
     }
 
     private void Update() {
+        transform.position = Vector3.MoveTowards(transform.position, hitPoint, Time.deltaTime * defaultForce);
+        //transform.rotation = Quaternion.LookRotation(rigidbody.velocity); //pitch
         if (!hit) {
             transform.position = Vector3.MoveTowards(transform.position, hitPoint, Time.deltaTime * defaultForce);
             //transform.rotation = Quaternion.LookRotation(rigidbody.velocity); //pitch
@@ -67,73 +77,38 @@ public class ProjectileArrow : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision) {
-        if (!hit && CollisionIsAllowed(collision)) {
-            hit = true;
-
-            //stick to the target
-            rigidBody.constraints = RigidbodyConstraints.FreezeAll;
-            rigidBody.isKinematic = true;
-=======
-        //disable mouse look
-        this.shootManager = monitor.GetComponent<ShootingSessionManager>();
-        shootManager.EnterCamAnimation(true);
-
-        //enable the arrow's collider
-        GetComponent<CapsuleCollider>().enabled = true;
-        this.rigidbody = GetComponent<Rigidbody>();
-        rigidbody.velocity = Vector3.zero;
-        rigidbody.isKinematic = false;
-
-        //launch the arrow at the direction of the sight
-        RotateTowardsTarget(out force, out hitPoint);
-    }
-
-    private void Update() {
-        transform.position = Vector3.MoveTowards(transform.position, hitPoint, Time.deltaTime * defaultForce);
-        //transform.rotation = Quaternion.LookRotation(rigidbody.velocity); //pitch
-
-        if (hit) {
-            noHitEscortTime -= Time.deltaTime;
-            if (noHitEscortTime <= 0) Finish();
->>>>>>> parent of dcc4155... Fixed arrow shooting and targets
-        }
-    }
-
-    private void RotateTowardsTarget(out float force, out Vector3 hitPoint) {
+    /// <summary>
+    /// Find the target that the sight is pointing at, and rotate the arrow towards it.
+    /// </summary>
+    /// <returns>The point that the arrow should hit.</returns>
+    private Vector3 RotateTowardsTarget() {
         Transform camTransform = Camera.main.transform;
-        print("cam: " + Camera.main.name);
-        Ray ray = new Ray(camTransform.position, camTransform.forward);
-        Vector3 hitP = Vector3.zero;
+        Ray ray = new Ray(camTransform.position, Camera.main.transform.forward);
+        float distance = defaultForce;
+        Vector3 point;
 
         //find direction
-<<<<<<< HEAD
-        if (Physics.Raycast(ray, out RaycastHit rayHit) && rayHit.collider != null) {
-            hitP = rayHit.point;
-=======
         if (Physics.Raycast(ray, out RaycastHit rayHit, Mathf.Infinity, collisionsOnLayer) && rayHit.collider != null) {
-            hitPoint = rayHit.point;
+            point = rayHit.point;
             distance = rayHit.distance;
             print("hit " + rayHit.collider.gameObject.name);
         }
         else {
             print("not hit");
-            hitPoint = ray.GetPoint(distance);
+            point = ray.GetPoint(distance);
             hit = true;
->>>>>>> parent of dcc4155... Fixed arrow shooting and targets
         }
 
         force = distance;
         print("distance " + distance);
 
         //rotate
-        Vector3 direction = (hitP - transform.position).normalized;
+        Vector3 direction = (point - transform.position).normalized;
         transform.rotation = Quaternion.LookRotation(direction);
+
+        return point;
     }
 
-<<<<<<< HEAD
-        return hitP;
-=======
     private void OnCollisionEnter(Collision collision) {
         print("colliding with game object " + collision.gameObject.name + " whose name is " + LayerMask.LayerToName(collision.gameObject.layer));
 
@@ -145,9 +120,11 @@ public class ProjectileArrow : MonoBehaviour
             rigidbody.constraints = RigidbodyConstraints.FreezeAll;
             rigidbody.isKinematic = true;
         }
->>>>>>> parent of dcc4155... Fixed arrow shooting and targets
     }
 
+    /// <summary>
+    /// Destory unnecessary components of the arrow and progress the shooting round.
+    /// </summary>
     private void Finish() {
         //enable mouse look and switch to first person camera
         shootManager.LoadArrow();
@@ -158,6 +135,11 @@ public class ProjectileArrow : MonoBehaviour
         enabled = false;
     }
 
+    /// <summary>
+    /// Check if the collision with a specific layer is allowed (as determined by "collisionsOnLayer").
+    /// </summary>
+    /// <param name="collision">The layer to check</param>
+    /// <returns>True if the collision with that layer should not be ignored.</returns>
     private bool CollisionIsAllowed(Collision collision) {
         return (1 << collision.gameObject.layer) == collisionsOnLayer.value;
     }
