@@ -1,6 +1,12 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:ArcheryGame/Assets/Polybrush Data.meta
+guid: 7030231e231c4fb459c99b1de408b045
+folderAsset: yes
+DefaultImporter:
+=======
 guid: 04a2dbfd238823447b96e1330f2950af
 NativeFormatImporter:
+>>>>>>> parent of dcc4155... Fixed arrow shooting and targets:ArcheryGame/Assets/Physics Hulls/Red Ring Hull Data.asset.meta
   externalObjects: {}
   mainObjectFileID: 11400000
   userData: 
