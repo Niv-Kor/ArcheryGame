@@ -21,20 +21,33 @@ public class ProjectileArrow : MonoBehaviour
     [Tooltip("The layer that the arrow can collide with")]
     [SerializeField] private LayerMask collisionsOnLayer;
 
-    private Rigidbody rigidbody;
+    [Tooltip("The angle deviation of the arrow compared to the sight")]
+    [SerializeField] private Vector3 sightDeviation;
+
+    private readonly int NORMAL_HEIGHT_SAMPLES = 10;
+
+    private Rigidbody rigidBody;
     private CameraManager camManager;
     private GameObject arrowCamera;
     private ProjectileManager projManager;
     private ShootingSessionManager shootManager;
-    private Vector3 hitPoint;
+    private Vector3 hitPoint, velocity;
+    private Quaternion arrowRotation;
+    private List<float> sampledHeights;
+    private float lastHeight, normalHeight;
+    private Vector3 lastPosition;
     private bool hit;
 
     private void OnEnable() {
+        this.sampledHeights = new List<float>();
+        this.normalHeight = -1;
+        this.velocity = transform.position;
+
         //enable the arrow's collider
         GetComponent<CapsuleCollider>().enabled = true;
-        this.rigidbody = GetComponent<Rigidbody>();
-        rigidbody.velocity = Vector3.zero;
-        rigidbody.isKinematic = false;
+        this.rigidBody = GetComponent<Rigidbody>();
+        rigidBody.velocity = Vector3.zero;
+        rigidBody.isKinematic = false;
 
         //switch to the arrow camera view
         GameObject monitor = GameObject.FindGameObjectWithTag("Player Monitor");
@@ -47,7 +60,8 @@ public class ProjectileArrow : MonoBehaviour
         shootManager.EnterCamAnimation(true);
 
         //rotate the arrow at the direction of the sight
-        hitPoint = RotateTowardsTarget();
+        this.hitPoint = GetHitPoint();
+        this.arrowRotation = RotateArrow(hitPoint);
 
         //shorten hit distance by the length of the arrow
         float arrowLength = GetComponent<MeshRenderer>().bounds.size.z * (1 - thrustDepthPercent);
@@ -57,9 +71,13 @@ public class ProjectileArrow : MonoBehaviour
 
     private void Update() {
         if (!hit) {
+            lastPosition = transform.position;
             transform.position = Vector3.MoveTowards(transform.position, hitPoint, Time.deltaTime * defaultForce);
-            //transform.rotation = Quaternion.LookRotation(rigidbody.velocity); //pitch
+            Pitch();
+            //PreventArrowJump();
+            
         }
+        //observe the arrow for a while after it hit the target
         else {
             escortTime -= Time.deltaTime;
             if (escortTime <= 0) Finish();
@@ -67,44 +85,79 @@ public class ProjectileArrow : MonoBehaviour
     }
 
     private void OnCollisionEnter(Collision collision) {
-        print("trigger collision");
-        print("colliding with game object " + collision.gameObject.name + " whose layer is " + LayerMask.LayerToName(collision.gameObject.layer));
-
         if (!hit && CollisionIsAllowed(collision)) {
             hit = true;
-            print("Arrow hit " + collision.gameObject.name + " (tagged as \"" + collision.gameObject.tag + "\")");
 
             //stick to the target
-            rigidbody.constraints = RigidbodyConstraints.FreezeAll;
-            rigidbody.isKinematic = true;
+            transform.rotation = arrowRotation;
+            rigidBody.constraints = RigidbodyConstraints.FreezeAll;
+            rigidBody.isKinematic = true;
+        }
+    }
+
+    private void Pitch() {
+        velocity = lastPosition - transform.position;
+        transform.LookAt(transform.position - velocity);
+        hitPoint.y += velocity.y;
+        print("velocity: " + velocity);
+    }
+
+    /// <summary>
+    /// Prevent the arrow from dramatically changing its 'y' axis position during flight.
+    /// </summary>
+    private void PreventArrowJump() {
+        if (normalHeight != -1 && Mathf.Abs(transform.position.y - lastHeight) > normalHeight)
+            transform.position = new Vector3(transform.position.x, lastHeight, transform.position.z);
+        else {
+            lastHeight = transform.position.y;
+
+            //add last height to the list of sampled heights
+            if (sampledHeights.Count < NORMAL_HEIGHT_SAMPLES) sampledHeights.Add(lastHeight);
+
+            //calculate average height using the samples
+            else if (normalHeight == -1) {
+                for (int i = 1; i < NORMAL_HEIGHT_SAMPLES; i++)
+                    normalHeight += Mathf.Abs(sampledHeights[i] - sampledHeights[i - 1]);
+
+                normalHeight /= NORMAL_HEIGHT_SAMPLES;
+            }
         }
     }
 
     /// <summary>
-    /// Find the target that the sight is pointing at, and rotate the arrow towards it.
+    /// Find the exact point that the sight is pointing at.
     /// </summary>
     /// <returns>The point that the arrow should hit.</returns>
-    private Vector3 RotateTowardsTarget() {
+    private Vector3 GetHitPoint() {
         Transform camTransform = Camera.main.transform;
-        Ray ray = new Ray(camTransform.position, Camera.main.transform.forward);
+        Vector3 camRotation = camTransform.forward + new Vector3(sightDeviation.x, sightDeviation.y, 0f);
+        Ray ray = new Ray(camTransform.position, camRotation);
         float distance = defaultForce;
+        Vector3 point;
 
         //find direction
         if (Physics.Raycast(ray, out RaycastHit rayHit, Mathf.Infinity, collisionsOnLayer) && rayHit.collider != null) {
-            hitPoint = rayHit.point;
-            print("hit " + rayHit.collider.gameObject.name);
+            point = rayHit.point;
         }
         else {
-            print("not hit");
-            hitPoint = ray.GetPoint(distance);
+            point = ray.GetPoint(distance);
             hit = true;
         }
 
-        //rotate
-        Vector3 direction = (hitPoint - transform.position).normalized;
-        transform.rotation = Quaternion.LookRotation(direction);
+        return point;
+    }
 
-        return hitPoint;
+    /// <summary>
+    /// Rotate the arrow towards the point it should be hitting.
+    /// </summary>
+    /// <param name="hitPoint">The point that the arrow should hit</param>
+    /// <returns>The exact rotation towards the hit point.</returns>
+    private Quaternion RotateArrow(Vector3 hitPoint) {
+        Vector3 direction = (hitPoint - transform.position).normalized;
+        arrowRotation = Quaternion.LookRotation(direction);
+        transform.rotation = arrowRotation;
+
+        return arrowRotation;
     }
 
     /// <summary>

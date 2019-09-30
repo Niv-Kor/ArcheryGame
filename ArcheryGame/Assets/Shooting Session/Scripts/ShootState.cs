@@ -8,18 +8,23 @@ public class ShootState : StateMachineBehaviour
     [SerializeField] [Range(0, 100)] private float exitAfterPercentage;
 
     private ShootingSessionManager shootSession;
+    private GameObject arrow;
+    private Vector3 arrowInitPos;
+    private Quaternion arrowInitRot;
     private float time, changeTime;
     private bool shot;
 
     private void OnEnable() {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        GameObject monitor = ObjectFinder.GetChild(player, "Player Monitor");
+        GameObject monitor = GameObject.FindGameObjectWithTag("Player Monitor");
+        this.arrow = GameObject.FindGameObjectWithTag("Arrow");
         this.shootSession = monitor.GetComponent<ShootingSessionManager>();
     }
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        this.time = 0;
-        this.changeTime = stateInfo.length * exitAfterPercentage / 100;
+        arrowInitPos = arrow.transform.position;
+        arrowInitRot = arrow.transform.rotation;
+        time = 0;
+        changeTime = stateInfo.length * exitAfterPercentage / 100;
         shot = false;
     }
 
@@ -30,7 +35,7 @@ public class ShootState : StateMachineBehaviour
         if (time >= changeTime) {
             shot = true;
             time = 0; //init for next time
-            shootSession.Shoot();
+            shootSession.Shoot(arrowInitPos, arrowInitRot);
         }
     }
 }

@@ -151,16 +151,18 @@ public class ShootingSessionManager : MonoBehaviour
     /// <summary>
     /// Launch the loaded arrow after a draw.
     /// </summary>
-    public void Shoot() {
+    public void Shoot(Vector3 arrowPos, Quaternion arrowRot) {
         animator.SetBool(SHOOT_PARAM, false);
         animator.SetBool(DRAW_PARAM, false);
         ExitCamAnimation(false, CameraEnabler.Tag.Arrow, false);
+        arrowInstance.transform.position = arrowPos;
+        arrowInstance.transform.rotation = arrowRot;
         arrowInstance.SetActive(true);
         drawnArrowObject.SetActive(false);
         arrowInstance.GetComponent<MeshRenderer>().enabled = true; //display the arrow
         arrowInstance.GetComponent<ProjectileArrow>().enabled = true; //release the arrow
 
-        //dispose arrow instance
+        //dispose arrow instance variables
         arrowInstanceObj = null;
         arrowInstance = null;
         ArrowInstanceCam = null;

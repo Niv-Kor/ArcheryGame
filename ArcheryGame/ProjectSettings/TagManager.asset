@@ -10,10 +10,10 @@ TagManager:
   - Avatar
   - Camera
   - Player Monitor
-  - Camera Monitor
   - Bow
   - Arrow
   - Sight Point
+  - Fire
   layers:
   - Default
   - TransparentFX

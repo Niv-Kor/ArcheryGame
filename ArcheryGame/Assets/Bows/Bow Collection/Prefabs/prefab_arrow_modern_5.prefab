@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 1148827567520171087}
   - component: {fileID: 1057449463999106634}
   - component: {fileID: 8942111105858429780}
-  - component: {fileID: 3393157440336953528}
   m_Layer: 0
   m_Name: prefab_arrow_modern_5
   m_TagString: Untagged
@@ -125,7 +124,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94e999d96dbd3a84b99b64ffa16dd70b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  force: 2000
+  defaultForce: 100
+  escortTime: 2.5
+  thrustDepthPercent: 0.15
+  collisionsOnLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  sightDeviation: {x: 0.0069, y: -0.194, z: 0}
 --- !u!114 &8942111105858429780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,15 +145,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0.72, z: 0}
   visualizeSphere: 0
---- !u!114 &3393157440336953528
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1392634132429328}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4363040ba57639c4a95e63b4ea931ea1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
