@@ -8,7 +8,7 @@ using UnityStandardAssets.Utility;
 
 public class CameraManager : MonoBehaviour
 {
-    [SerializeField] private Camera firstPersonCam;
+    [SerializeField] public Camera firstPersonCam;
     [SerializeField] private List<GameObject> cameraObjects;
     [SerializeField] [Range(0, 100)] private float zoomPercent;
 
@@ -40,8 +40,7 @@ public class CameraManager : MonoBehaviour
             GameObject lastSpawnedArrow = projManager.GetLastSpawned();
 
             if (lastSpawnedArrow != null) {
-                GameObject arrowStick = ObjectFinder.GetChild(lastSpawnedArrow, "Stick");
-                GameObject arrowCam = ObjectFinder.GetChild(arrowStick, "Arrow Camera");
+                GameObject arrowCam = ObjectFinder.GetChild(lastSpawnedArrow, "Camera");
                 ChangeCam(camTag, arrowCam);
             }
             else ChangeCam(CameraEnabler.Tag.None);

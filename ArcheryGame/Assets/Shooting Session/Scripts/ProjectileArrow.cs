@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Assets.Script_Tools;
+﻿using Assets.Script_Tools;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
-using UnityEngine.UIElements;
-using Object = System.Object;
 
 public class ProjectileArrow : MonoBehaviour
 {
@@ -24,36 +19,33 @@ public class ProjectileArrow : MonoBehaviour
     [Tooltip("The angle deviation of the arrow compared to the sight")]
     [SerializeField] private Vector3 sightDeviation;
 
-    private readonly int NORMAL_HEIGHT_SAMPLES = 10;
+    private readonly float MAX_FLIGHT_DISTANCE = 10_000;
 
     private Rigidbody rigidBody;
     private CameraManager camManager;
     private GameObject arrowCamera;
     private ProjectileManager projManager;
     private ShootingSessionManager shootManager;
-    private Vector3 hitPoint, velocity;
+    private Vector3 hitPoint, velocity, lastPosition;
     private Quaternion arrowRotation;
-    private List<float> sampledHeights;
-    private float lastHeight, normalHeight;
-    private Vector3 lastPosition;
-    private bool hit;
+    private float timeRemainder;
+    private bool hit, freeFlight;
 
     private void OnEnable() {
-        this.sampledHeights = new List<float>();
-        this.normalHeight = -1;
         this.velocity = transform.position;
+        this.timeRemainder = escortTime;
+
+        //switch to the arrow camera view
+        GameObject monitor = GameObject.FindGameObjectWithTag("Player Monitor");
+        this.arrowCamera = ObjectFinder.GetChild(gameObject, "Camera");
+        this.camManager = monitor.GetComponent<CameraManager>();
+        this.projManager = monitor.GetComponent<ProjectileManager>();
 
         //enable the arrow's collider
         GetComponent<CapsuleCollider>().enabled = true;
         this.rigidBody = GetComponent<Rigidbody>();
         rigidBody.velocity = Vector3.zero;
         rigidBody.isKinematic = false;
-
-        //switch to the arrow camera view
-        GameObject monitor = GameObject.FindGameObjectWithTag("Player Monitor");
-        this.arrowCamera = ObjectFinder.GetChild(gameObject, "Arrow Camera");
-        this.camManager = monitor.GetComponent<CameraManager>();
-        this.projManager = monitor.GetComponent<ProjectileManager>();
 
         //disable mouse look
         this.shootManager = monitor.GetComponent<ShootingSessionManager>();
@@ -64,64 +56,52 @@ public class ProjectileArrow : MonoBehaviour
         this.arrowRotation = RotateArrow(hitPoint);
 
         //shorten hit distance by the length of the arrow
-        float arrowLength = GetComponent<MeshRenderer>().bounds.size.z * (1 - thrustDepthPercent);
+        GameObject shaft = ObjectFinder.GetChild(gameObject, "Shaft");
+        float arrowLength = shaft.GetComponent<MeshRenderer>().bounds.size.z * (1 - thrustDepthPercent);
         Vector3 directionVector = (hitPoint - transform.position).normalized;
-        hitPoint -= directionVector * arrowLength;
+        hitPoint += directionVector * arrowLength;
     }
 
     private void Update() {
         if (!hit) {
-            lastPosition = transform.position;
+            lastPosition = transform.position; //save last position for the pitch method
             transform.position = Vector3.MoveTowards(transform.position, hitPoint, Time.deltaTime * defaultForce);
-            Pitch();
-            //PreventArrowJump();
-            
+            //Pitch();
         }
         //observe the arrow for a while after it hit the target
-        else {
-            escortTime -= Time.deltaTime;
-            if (escortTime <= 0) Finish();
+        if (hit || freeFlight) {
+            timeRemainder -= Time.deltaTime;
+            if (timeRemainder <= 0) Finish();
         }
     }
 
     private void OnCollisionEnter(Collision collision) {
         if (!hit && CollisionIsAllowed(collision)) {
             hit = true;
+            
+            //maintain the same angle on the 'y' and 'z' axes
+            /*transform.eulerAngles = new Vector3(arrowRotation.eulerAngles.x,
+                                                arrowRotation.eulerAngles.y,
+                                                arrowRotation.eulerAngles.z);*/
 
             //stick to the target
-            transform.rotation = arrowRotation;
             rigidBody.constraints = RigidbodyConstraints.FreezeAll;
             rigidBody.isKinematic = true;
-        }
-    }
 
-    private void Pitch() {
-        velocity = lastPosition - transform.position;
-        transform.LookAt(transform.position - velocity);
-        hitPoint.y += velocity.y;
-        print("velocity: " + velocity);
+            //show the arrow a little more before switching cameras
+            if (freeFlight) timeRemainder = escortTime;
+        }
     }
 
     /// <summary>
-    /// Prevent the arrow from dramatically changing its 'y' axis position during flight.
+    /// Pitch the arrow (rotate on the 'x' axis) as it flies.
     /// </summary>
-    private void PreventArrowJump() {
-        if (normalHeight != -1 && Mathf.Abs(transform.position.y - lastHeight) > normalHeight)
-            transform.position = new Vector3(transform.position.x, lastHeight, transform.position.z);
-        else {
-            lastHeight = transform.position.y;
-
-            //add last height to the list of sampled heights
-            if (sampledHeights.Count < NORMAL_HEIGHT_SAMPLES) sampledHeights.Add(lastHeight);
-
-            //calculate average height using the samples
-            else if (normalHeight == -1) {
-                for (int i = 1; i < NORMAL_HEIGHT_SAMPLES; i++)
-                    normalHeight += Mathf.Abs(sampledHeights[i] - sampledHeights[i - 1]);
-
-                normalHeight /= NORMAL_HEIGHT_SAMPLES;
-            }
-        }
+    private void Pitch() {                          
+        velocity = lastPosition - transform.position;
+        hitPoint.y += velocity.y;
+        Vector3 direction = transform.position + new Vector3(-velocity.x, velocity.y * 2, -velocity.z);
+        transform.LookAt(direction);
+        arrowRotation = transform.rotation;
     }
 
     /// <summary>
@@ -129,19 +109,25 @@ public class ProjectileArrow : MonoBehaviour
     /// </summary>
     /// <returns>The point that the arrow should hit.</returns>
     private Vector3 GetHitPoint() {
-        Transform camTransform = Camera.main.transform;
+        //reference the first person camera
+        GameObject monitor = GameObject.FindGameObjectWithTag("Player Monitor");
+        CameraManager camManager = monitor.GetComponent<CameraManager>();
+        Transform camTransform = camManager.firstPersonCam.transform;
+
+        //shoot a straight ray from the center of the camera
         Vector3 camRotation = camTransform.forward + new Vector3(sightDeviation.x, sightDeviation.y, 0f);
         Ray ray = new Ray(camTransform.position, camRotation);
-        float distance = defaultForce;
+        float distance = Mathf.Infinity;
         Vector3 point;
 
         //find direction
-        if (Physics.Raycast(ray, out RaycastHit rayHit, Mathf.Infinity, collisionsOnLayer) && rayHit.collider != null) {
-            point = rayHit.point;
-        }
-        else {
-            point = ray.GetPoint(distance);
-            hit = true;
+        bool rayCast = Physics.Raycast(ray, out RaycastHit rayHit, distance, collisionsOnLayer);
+
+        if (rayCast && rayHit.collider != null) point = rayHit.point; //known direction
+        else { //free flight
+            point = ray.GetPoint(MAX_FLIGHT_DISTANCE);
+            freeFlight = true;
+            timeRemainder *= 2;
         }
 
         return point;

@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Assets.Script_Tools;
+﻿using Assets.Script_Tools;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityStandardAssets.Characters.FirstPerson;
 using Input = UnityEngine.Input;
 
@@ -16,8 +13,8 @@ public class ShootingSessionManager : MonoBehaviour
     private RigidbodyFirstPersonController playerController;
     private CameraManager camManager;
     private GameObject player;
-    private GameObject drawnArrowObject, drawnArrow;
-    private GameObject arrowInstanceObj, arrowInstance, ArrowInstanceCam;
+    private GameObject drawnArrow;
+    private GameObject arrowInstance, arrowInstanceCam;
     private bool isShooting, isPulling;
     private ProjectileManager projManager;
     
@@ -25,13 +22,7 @@ public class ShootingSessionManager : MonoBehaviour
         this.animator = gameObject.GetComponent<Animator>();
         this.player = GameObject.FindGameObjectWithTag("Player");
         this.playerController = player.GetComponent<RigidbodyFirstPersonController>();
-
-        GameObject firstPersonObject = ObjectFinder.GetChild(gameObject, "First Person Camera");
-        GameObject firstPersonCamera = ObjectFinder.GetChild(firstPersonObject, "Camera");
-        GameObject equipment = ObjectFinder.GetChild(firstPersonCamera, "Equipment");
-        GameObject bow = ObjectFinder.GetChild(equipment, "Bow");
-        this.drawnArrowObject = ObjectFinder.GetChild(bow, "Arrow");
-        this.drawnArrow = ObjectFinder.GetChild(drawnArrowObject, "Stick");
+        this.drawnArrow = GameObject.FindGameObjectWithTag("Arrow");
 
         GameObject monitor = GameObject.FindGameObjectWithTag("Player Monitor");
         this.projManager = monitor.GetComponent<ProjectileManager>();
@@ -55,7 +46,7 @@ public class ShootingSessionManager : MonoBehaviour
                 if (Input.GetMouseButtonDown(1)) {
                     //destroy the newly created arrow
                     projManager.DestroyLastSpawned();
-                    camManager.DestroyCam(ArrowInstanceCam);
+                    camManager.DestroyCam(arrowInstanceCam);
 
                     //enable animation
                     EnterCamAnimation(true);
@@ -89,10 +80,10 @@ public class ShootingSessionManager : MonoBehaviour
     /// Align the instantiated arrow with the actual drawn arrow.
     /// </summary>
     private void AlignArrowInstance() {
-        if (arrowInstanceObj != null) {
-            Transform arrowTransform = drawnArrowObject.transform;
-            arrowInstanceObj.transform.position = arrowTransform.position;
-            arrowInstanceObj.transform.rotation = arrowTransform.rotation;
+        if (arrowInstance != null) {
+            Transform arrowTransform = drawnArrow.transform;
+            arrowInstance.transform.position = arrowTransform.position;
+            arrowInstance.transform.eulerAngles = Vector3.zero;
         }
     }
 
@@ -135,17 +126,16 @@ public class ShootingSessionManager : MonoBehaviour
     /// The fired arrow should not be the one that's drawn, but rather duplicated one in its place.
     /// </summary>
     private void InstantiateArrow() {
-        this.arrowInstanceObj = Instantiate(drawnArrowObject);
-        arrowInstanceObj.transform.localScale *= 1.8f;
+        this.arrowInstance = Instantiate(drawnArrow);
+        arrowInstance.transform.localScale *= 1.8f;
         AlignArrowInstance();
 
-        this.arrowInstance = ObjectFinder.GetChild(arrowInstanceObj, "Stick");
-        this.ArrowInstanceCam = ObjectFinder.GetChild(arrowInstance, "Arrow Camera");
-        arrowInstance.GetComponent<MeshRenderer>().enabled = false;
-        projManager.Spawn(arrowInstanceObj);
-        camManager.AddCam(ArrowInstanceCam);
-        ArrowInstanceCam.SetActive(true);
-        ArrowInstanceCam.GetComponent<ArrowCameraAligner>().enabled = true;
+        this.arrowInstanceCam = ObjectFinder.GetChild(arrowInstance, "Camera");
+        arrowInstance.SetActive(false);
+        projManager.Spawn(arrowInstance);
+        camManager.AddCam(arrowInstanceCam);
+        arrowInstanceCam.SetActive(true);
+        arrowInstanceCam.GetComponent<ArrowCameraAligner>().enabled = true;
     }
 
     /// <summary>
@@ -158,21 +148,36 @@ public class ShootingSessionManager : MonoBehaviour
         arrowInstance.transform.position = arrowPos;
         arrowInstance.transform.rotation = arrowRot;
         arrowInstance.SetActive(true);
-        drawnArrowObject.SetActive(false);
-        arrowInstance.GetComponent<MeshRenderer>().enabled = true; //display the arrow
+        drawnArrow.SetActive(false);
+        EnableColliders(arrowInstance.transform, true);
         arrowInstance.GetComponent<ProjectileArrow>().enabled = true; //release the arrow
 
         //dispose arrow instance variables
-        arrowInstanceObj = null;
         arrowInstance = null;
-        ArrowInstanceCam = null;
+        arrowInstanceCam = null;
+    }
+
+    /// <summary>
+    /// Recursively enable / disable mesh colliders of every child of an object.
+    /// </summary>
+    /// <param name="parent">The parent object</param>
+    /// <param name="enable">True to enable mesh colliders or false to disable them</param>
+    private void EnableColliders(Transform parent, bool enable) {
+        foreach (Transform child in parent) {
+            try {
+                MeshCollider collider = child.GetComponent<MeshCollider>();
+                collider.enabled = enable;
+            }
+            catch (MissingComponentException e) {}
+            EnableColliders(child, enable);
+        }
     }
 
     /// <summary>
     /// Load a new arrow into the bow after a launch.
     /// </summary>
     public void LoadArrow() {
-        drawnArrowObject.SetActive(true);
+        drawnArrow.SetActive(true);
     }
 
     /// <returns>True if the player is at shooting stance at the moment.</returns>

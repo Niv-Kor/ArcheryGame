@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Assets.Script_Tools;
-using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ArrowCameraAligner : MonoBehaviour
 {
