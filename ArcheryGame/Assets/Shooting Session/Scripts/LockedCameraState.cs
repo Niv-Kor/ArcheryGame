@@ -10,7 +10,7 @@ public class LockedCameraState : StateMachineBehaviour
     [SerializeField] private bool disableAnimatorOnExit;
     [SerializeField] private bool zoomOnExit;
 
-    private ShootingSessionManager shootSession;
+    protected ShootingSessionManager shootSession;
 
     private void OnEnable() {
         GameObject player = GameObject.FindGameObjectWithTag("Player");

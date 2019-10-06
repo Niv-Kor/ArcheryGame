@@ -2,12 +2,19 @@
 
 public class ScoreManager : MonoBehaviour
 {
-    private readonly float MAX_REPORT_PERIOD = .3f;
+    [Tooltip("Array of the 10 rings")]
+    [SerializeField] private GameObject[] rings = new GameObject[10];
 
-    private GameObject monitor;
+    [Tooltip("Tag of the arrow that's suppose to hit the target")]
+    [SerializeField] public string arrowTag;
+
+    private readonly float REPORT_PERIOD = .5f;
+    private readonly string CLEARED_ARROW_TAG = "Untagged";
+
+    private GameObject reportedArrow, monitor;
     private float reportTimer;
     private int finalScore, lastScore;
-    private bool reported;
+    private bool waitingForReports;
 
     private void Start() {
         this.monitor = GameObject.FindGameObjectWithTag("Player Monitor");
@@ -18,13 +25,14 @@ public class ScoreManager : MonoBehaviour
     /// Initialize the final score and wait for a new hit.
     /// </summary>
     private void Init() {
-        this.reportTimer = MAX_REPORT_PERIOD;
+        this.reportTimer = 0;
         this.finalScore = 0;
-        this.reported = false;
+        this.waitingForReports = false;
+        this.reportedArrow = null;
     }
 
     private void Update() {
-        if (reported) {
+        if (waitingForReports) {
             reportTimer -= Time.deltaTime;
 
             //check final results
@@ -37,22 +45,40 @@ public class ScoreManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Tell the rings to start detecting collisions with an arrow.
+    /// The rings will try to detect that collision for a fixed period of time and then
+    /// report back their results.
+    /// </summary>
+    public void CheckScore() {
+        foreach (GameObject ring in rings) {
+            ScoreDetector detector = ring.GetComponent<ScoreDetector>();
+            detector.EnableDetection(REPORT_PERIOD);
+        }
+
+        //activate timer
+        reportTimer = REPORT_PERIOD * 1.1f;
+        waitingForReports = true;
+    }
+
+    /// <summary>
     /// Report the target about a collision with one of the rings.
     /// The highest value ring is taken as the rightful final score.
     /// </summary>
     /// <param name="score">The value of the reporting ring</param>
-    public void Report(int score) {
-        reported = true;
+    public void Report(GameObject arrow, int score) {
         if (score > finalScore) finalScore = score;
+        reportedArrow = arrow;
     }
 
     /// <summary>
-    /// Report the last hit's score.
+    /// Report the last hit's final score.
     /// </summary>
     /// <param name="score">The score of the last arrow that hit the target</param>
     private void ReportFinalScore(int score) {
-        print("reported " + score);
-        //TODO
+        if (reportedArrow != null) {
+            print("Reported " + score);
+            reportedArrow.tag = CLEARED_ARROW_TAG;
+        }
     }
 
     /// <returns>The score of the last arrow that hit the target.</returns>

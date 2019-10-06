@@ -64,6 +64,11 @@ public class CameraManager : MonoBehaviour
         }
     }
 
+    /// <param name="camTag">The tag of the requested camera</param>
+    /// <returns>
+    /// A camera that is tagged the same as the argument.
+    /// If multiple cameras are found, the first one is returned.
+    /// </returns>
     public GameObject GetCam(CameraEnabler.Tag camTag) {
         if (camTag == CameraEnabler.Tag.Arrow) return projManager.GetLastSpawned();
         else {
@@ -76,10 +81,18 @@ public class CameraManager : MonoBehaviour
         return null;
     }
 
+    /// <summary>
+    /// Add a camera to the cameras list.
+    /// </summary>
+    /// <param name="cam">The camera to add</param>
     public void AddCam(GameObject cam) {
         cameraObjects.Add(cam);
     }
 
+    /// <summary>
+    /// Remove a camera from the cameras list.
+    /// </summary>
+    /// <param name="cam">The camera to remove</param>
     public void DestroyCam(GameObject cam) {
         cameraObjects.Remove(cam);
     }
@@ -113,7 +126,9 @@ public class CameraManager : MonoBehaviour
         return DEFAULT_FIELD_OF_VIEW - subtraction;
     }
 
-    public bool FollowingArrow() {
-        return currentCameraTag == CameraEnabler.Tag.Arrow;
-    }
+    /// <returns>The current main camera object.</returns>
+    public Camera GetMainCamera() { return currentCamera; }
+
+    /// <returns>The current main camera's tag.</returns>
+    public CameraEnabler.Tag GetMainCameraTag() { return currentCameraTag; }
 }

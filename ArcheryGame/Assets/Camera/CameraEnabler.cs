@@ -17,7 +17,6 @@ public class CameraEnabler : MonoBehaviour
     [SerializeField] public Tag tag = Tag.Generic;
     [SerializeField] private List<GameObject> enableOnActivation;
 
-    private CameraManager camManager;
     private Camera camComponent;
     private AudioListener audioListener;
     private FlareLayer flare;
@@ -32,6 +31,10 @@ public class CameraEnabler : MonoBehaviour
         this.flare = GetComponent<FlareLayer>();
     }
 
+    /// <summary>
+    /// Activate a camera and enable all its critical components.
+    /// </summary>
+    /// <param name="flag">True to activate or false to deactivate</param>
     public void Activate(bool flag) {
         if (!init) Start();
 
@@ -44,6 +47,10 @@ public class CameraEnabler : MonoBehaviour
         foreach (GameObject child in enableOnActivation) child.SetActive(flag);
     }
 
+    /// <summary>
+    /// Tag a camera as the main camera in order to assure its activation in the game.
+    /// </summary>
+    /// <param name="flag">True to tag as "MainCamera" or false to tag as a regular "Camera"</param>
     private void TagAsMain(bool flag) {
         gameObject.tag = flag ? "MainCamera" : "Camera";
     }

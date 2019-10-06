@@ -5,6 +5,8 @@ using Input = UnityEngine.Input;
 
 public class ShootingSessionManager : MonoBehaviour
 {
+    [SerializeField] private GameObject drawnArrow;
+
     private readonly string STANCE_PARAM = "stance";
     private readonly string DRAW_PARAM = "draw";
     private readonly string SHOOT_PARAM = "shoot";
@@ -13,7 +15,6 @@ public class ShootingSessionManager : MonoBehaviour
     private RigidbodyFirstPersonController playerController;
     private CameraManager camManager;
     private GameObject player;
-    private GameObject drawnArrow;
     private GameObject arrowInstance, arrowInstanceCam;
     private bool isShooting, isPulling;
     private ProjectileManager projManager;
@@ -22,7 +23,6 @@ public class ShootingSessionManager : MonoBehaviour
         this.animator = gameObject.GetComponent<Animator>();
         this.player = GameObject.FindGameObjectWithTag("Player");
         this.playerController = player.GetComponent<RigidbodyFirstPersonController>();
-        this.drawnArrow = GameObject.FindGameObjectWithTag("Arrow");
 
         GameObject monitor = GameObject.FindGameObjectWithTag("Player Monitor");
         this.projManager = monitor.GetComponent<ProjectileManager>();
@@ -40,7 +40,7 @@ public class ShootingSessionManager : MonoBehaviour
     /// Animate the bow states.
     /// </summary>
     private void Animate() {
-        if (isShooting && !IsAnimating() && !camManager.FollowingArrow()) {
+        if (isShooting && !IsAnimating() && camManager.GetMainCameraTag() != CameraEnabler.Tag.Arrow) {
             if (isPulling) {
                 //withdraw
                 if (Input.GetMouseButtonDown(1)) {
@@ -127,7 +127,7 @@ public class ShootingSessionManager : MonoBehaviour
     /// </summary>
     private void InstantiateArrow() {
         this.arrowInstance = Instantiate(drawnArrow);
-        arrowInstance.transform.localScale *= 1.8f;
+        //arrowInstance.transform.localScale *= 1.8f;
         AlignArrowInstance();
 
         this.arrowInstanceCam = ObjectFinder.GetChild(arrowInstance, "Camera");
@@ -149,28 +149,11 @@ public class ShootingSessionManager : MonoBehaviour
         arrowInstance.transform.rotation = arrowRot;
         arrowInstance.SetActive(true);
         drawnArrow.SetActive(false);
-        EnableColliders(arrowInstance.transform, true);
         arrowInstance.GetComponent<ProjectileArrow>().enabled = true; //release the arrow
 
         //dispose arrow instance variables
         arrowInstance = null;
         arrowInstanceCam = null;
-    }
-
-    /// <summary>
-    /// Recursively enable / disable mesh colliders of every child of an object.
-    /// </summary>
-    /// <param name="parent">The parent object</param>
-    /// <param name="enable">True to enable mesh colliders or false to disable them</param>
-    private void EnableColliders(Transform parent, bool enable) {
-        foreach (Transform child in parent) {
-            try {
-                MeshCollider collider = child.GetComponent<MeshCollider>();
-                collider.enabled = enable;
-            }
-            catch (MissingComponentException e) {}
-            EnableColliders(child, enable);
-        }
     }
 
     /// <summary>
