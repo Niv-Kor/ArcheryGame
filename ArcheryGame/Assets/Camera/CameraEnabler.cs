@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Xml.Serialization;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraEnabler : MonoBehaviour
@@ -14,8 +11,16 @@ public class CameraEnabler : MonoBehaviour
         Arrow
     }
 
-    [SerializeField] public Tag tag = Tag.Generic;
+    [Tooltip("The correct type of the camera.")]
+    [SerializeField] public Tag cameraTag = Tag.Generic;
+
+    [Tooltip("A list of objects to enable upon activation of this camera\n" +
+             "(and disable again upon deactivation)")]
     [SerializeField] private List<GameObject> enableOnActivation;
+
+    [Tooltip("A list of objects to disable upon activation of this camera\n" +
+             "(and enable again upon deactivation)")]
+    [SerializeField] private List<GameObject> disableOnActivation;
 
     private Camera camComponent;
     private AudioListener audioListener;
@@ -43,8 +48,9 @@ public class CameraEnabler : MonoBehaviour
         flare.enabled = flag;
         TagAsMain(flag);
 
-        //enable or disable the dependent children
+        //toggle the activation of the dependent objects
         foreach (GameObject child in enableOnActivation) child.SetActive(flag);
+        foreach (GameObject child in disableOnActivation) child.SetActive(!flag);
     }
 
     /// <summary>

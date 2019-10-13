@@ -126,11 +126,11 @@ public class ShootingSessionManager : MonoBehaviour
     /// The fired arrow should not be the one that's drawn, but rather duplicated one in its place.
     /// </summary>
     private void InstantiateArrow() {
-        this.arrowInstance = Instantiate(drawnArrow);
-        //arrowInstance.transform.localScale *= 1.8f;
+        //duplicate arrow instance
+        arrowInstance = Instantiate(drawnArrow);
         AlignArrowInstance();
 
-        this.arrowInstanceCam = ObjectFinder.GetChild(arrowInstance, "Camera");
+        arrowInstanceCam = ObjectFinder.GetChild(arrowInstance, "Camera");
         arrowInstance.SetActive(false);
         projManager.Spawn(arrowInstance);
         camManager.AddCam(arrowInstanceCam);

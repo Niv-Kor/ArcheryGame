@@ -1,10 +1,7 @@
-﻿using System.Collections;
+﻿using Assets.Script_Tools;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
-using Assets.Script_Tools;
 using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
-using UnityStandardAssets.Utility;
 
 public class CameraManager : MonoBehaviour
 {
@@ -52,7 +49,7 @@ public class CameraManager : MonoBehaviour
 
         //iterate over all cameras
         foreach (GameObject obj in cameraObjects) {
-            CameraEnabler.Tag ofTag = obj.GetComponent<CameraEnabler>().tag;
+            CameraEnabler.Tag ofTag = obj.GetComponent<CameraEnabler>().cameraTag;
             bool correctCam = ofTag == camTag || obj == cam;
             obj.GetComponent<CameraEnabler>().Activate(correctCam);
 
@@ -73,7 +70,7 @@ public class CameraManager : MonoBehaviour
         if (camTag == CameraEnabler.Tag.Arrow) return projManager.GetLastSpawned();
         else {
             foreach (GameObject obj in cameraObjects) {
-                CameraEnabler.Tag ofTag = obj.GetComponent<CameraEnabler>().tag;
+                CameraEnabler.Tag ofTag = obj.GetComponent<CameraEnabler>().cameraTag;
                 if (ofTag == camTag) return obj;
             }
         }

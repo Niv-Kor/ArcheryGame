@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 320873942}
   - component: {fileID: 320873941}
   - component: {fileID: 320873940}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Horizontal Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -27,13 +27,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 320873938}
-  m_LocalRotation: {x: -0.50949764, y: -0.48497948, z: 0.49005666, w: 0.51483166}
+  m_LocalRotation: {x: -0.5125108, y: -0.48784766, z: 0.4872014, w: 0.5118322}
   m_LocalPosition: {x: -1.0176896, y: -0.015073522, z: 0.8539384}
   m_LocalScale: {x: 0.4493233, y: 1.6857704, z: 1.6827608}
   m_Children: []
   m_Father: {fileID: 2020781699}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: -2.8240001, y: -89.40301, z: 89.971}
+  m_LocalEulerAnglesHint: {x: -2.825, y: -90.076004, z: 90.004005}
 --- !u!33 &320873943
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -59,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4cd48d6012dff8c4cae0c49a2f1b3bdf, type: 2}
+  - {fileID: 2100000, guid: 8059e9c88f4b4fd4babb529da793f7a8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1786,7 +1786,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &769572656
@@ -1802,7 +1802,7 @@ GameObject:
   - component: {fileID: 769572660}
   - component: {fileID: 769572659}
   - component: {fileID: 769572658}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Screw
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1848,7 +1848,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b112e7a8de095af408f2dd7096950d81, type: 2}
+  - {fileID: 2100000, guid: 589c00095f7d1df429bbcfcc207f3afe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5975,9 +5975,102 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
+--- !u!1 &1511978310
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1511978311}
+  - component: {fileID: 1511978314}
+  - component: {fileID: 1511978313}
+  - component: {fileID: 1511978312}
+  m_Layer: 0
+  m_Name: Glass
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1511978311
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1511978310}
+  m_LocalRotation: {x: -0.7059591, y: 0.05212609, z: 0.705183, w: 0.040268704}
+  m_LocalPosition: {x: -1.0342481, y: -0.09935221, z: 0.0016521203}
+  m_LocalScale: {x: 1.587607, y: 0.028308831, z: 1.5460342}
+  m_Children: []
+  m_Father: {fileID: 2020781699}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: -87.503006, y: 0, z: 0}
+--- !u!33 &1511978314
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1511978310}
+  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &1511978313
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1511978310}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 3f9dd5e35f2596f4685a4c2d27cbacdb, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!136 &1511978312
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1511978310}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5000001
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!1 &1834063856
 GameObject:
   m_ObjectHideFlags: 0
@@ -5991,7 +6084,7 @@ GameObject:
   - component: {fileID: 1834063860}
   - component: {fileID: 1834063859}
   - component: {fileID: 1834063858}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Vertical Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6037,7 +6130,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7699021e524f24946bbb7204ef53d499, type: 2}
+  - {fileID: 2100000, guid: e5624a9254ae257408b22c29de8421f1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -7764,7 +7857,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &2020781694
@@ -7780,7 +7873,7 @@ GameObject:
   - component: {fileID: 2020781697}
   - component: {fileID: 2020781696}
   - component: {fileID: 2020781695}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Ring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7794,16 +7887,17 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2020781694}
-  m_LocalRotation: {x: 0.7388621, y: -0.67382824, z: -0.004574893, w: 0.004172057}
-  m_LocalPosition: {x: 1.6833163, y: -1.0170181, z: 3.026499}
+  m_LocalRotation: {x: 0.67562115, y: -0.73724544, z: 0.002011378, w: -0.0011122817}
+  m_LocalPosition: {x: 1.29, y: -1, z: 4.67}
   m_LocalScale: {x: 1.5147859, y: 14.057924, z: 1.3265121}
   m_Children:
   - {fileID: 769572657}
   - {fileID: 1834063857}
   - {fileID: 320873939}
+  - {fileID: 1511978311}
   m_Father: {fileID: 437056338254322649}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: -179.29001, z: -95.272}
+  m_LocalEulerAnglesHint: {x: 0.08400001, y: -180.24998, z: -85.005005}
 --- !u!33 &2020781698
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -7829,7 +7923,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b112e7a8de095af408f2dd7096950d81, type: 2}
+  - {fileID: 2100000, guid: 589c00095f7d1df429bbcfcc207f3afe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -38502,7 +38596,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &437056338065324344
@@ -38518,7 +38612,7 @@ GameObject:
   - component: {fileID: 437056338065324348}
   - component: {fileID: 437056338065324349}
   - component: {fileID: 437056338065324346}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Screw Shell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38564,7 +38658,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 41d9ef6c6eb8d934eb9b9f5c40a20d59, type: 2}
+  - {fileID: 2100000, guid: b8c20a6edacac4847bbfc014f395a0bc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -38577,7 +38671,7 @@ MeshRenderer:
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
+  m_SelectedEditorRenderState: 2
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -50149,7 +50243,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &437056338231153628
@@ -50165,7 +50259,7 @@ GameObject:
   - component: {fileID: 437056338231153617}
   - component: {fileID: 437056338231153630}
   - component: {fileID: 437056338231153631}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Scaler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50181,7 +50275,7 @@ Transform:
   m_GameObject: {fileID: 437056338231153628}
   m_LocalRotation: {x: -0.000000016530972, y: 0.000000029802315, z: 0.0000000016298142,
     w: 1}
-  m_LocalPosition: {x: 2.406973, y: -0.14100006, z: 0.48416084}
+  m_LocalPosition: {x: 2.41, y: -0.573, z: 0.48}
   m_LocalScale: {x: 0.07774225, y: 0.191037, z: 0.21665053}
   m_Children:
   - {fileID: 437056339562896502}
@@ -50214,7 +50308,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b112e7a8de095af408f2dd7096950d81, type: 2}
+  - {fileID: 2100000, guid: 589c00095f7d1df429bbcfcc207f3afe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -50949,7 +51043,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &437056338231361911
@@ -50965,7 +51059,7 @@ GameObject:
   - component: {fileID: 437056338231361899}
   - component: {fileID: 437056338231361896}
   - component: {fileID: 437056338231361897}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Screw
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -51011,7 +51105,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b112e7a8de095af408f2dd7096950d81, type: 2}
+  - {fileID: 2100000, guid: 589c00095f7d1df429bbcfcc207f3afe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -51024,7 +51118,7 @@ MeshRenderer:
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
+  m_SelectedEditorRenderState: 2
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -52738,7 +52832,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &437056338254322662
@@ -52750,7 +52844,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 437056338254322649}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Sight Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52787,7 +52881,7 @@ GameObject:
   - component: {fileID: 437056338597995259}
   - component: {fileID: 437056338597995256}
   - component: {fileID: 437056338597995257}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Gauge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52833,7 +52927,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 41d9ef6c6eb8d934eb9b9f5c40a20d59, type: 2}
+  - {fileID: 2100000, guid: b8c20a6edacac4847bbfc014f395a0bc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -52846,7 +52940,7 @@ MeshRenderer:
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
+  m_SelectedEditorRenderState: 2
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -53080,7 +53174,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &437056338815584217
@@ -53096,7 +53190,7 @@ GameObject:
   - component: {fileID: 437056338815584221}
   - component: {fileID: 437056338815584218}
   - component: {fileID: 437056338815584219}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Point Screw
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -53111,8 +53205,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 437056338815584217}
   m_LocalRotation: {x: -0, y: 0.70308965, z: 0.7111013, w: 0}
-  m_LocalPosition: {x: 0.92982125, y: 0.61108655, z: -1.7944971}
-  m_LocalScale: {x: 5.4611473, y: 3.560623, z: 2.2221892}
+  m_LocalPosition: {x: 0.92918, y: 0.61031, z: -1.4337}
+  m_LocalScale: {x: 5.4611473, y: 4.842316, z: 2.2221892}
   m_Children: []
   m_Father: {fileID: 437056338254322649}
   m_RootOrder: 1
@@ -53142,7 +53236,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 13a99c306a50da3468007e4e7d6a9658, type: 2}
+  - {fileID: 2100000, guid: b3d739bc5e6fa33479c350481d6e5b8d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -54339,7 +54433,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &437056338856694597
@@ -54355,7 +54449,7 @@ GameObject:
   - component: {fileID: 437056338856693945}
   - component: {fileID: 437056338856694598}
   - component: {fileID: 437056338856694599}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Holder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -54401,7 +54495,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b112e7a8de095af408f2dd7096950d81, type: 2}
+  - {fileID: 2100000, guid: 589c00095f7d1df429bbcfcc207f3afe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -54414,7 +54508,7 @@ MeshRenderer:
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
+  m_SelectedEditorRenderState: 2
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -54617,7 +54711,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &437056339066132750
@@ -54633,7 +54727,7 @@ GameObject:
   - component: {fileID: 437056339066132738}
   - component: {fileID: 437056339066132739}
   - component: {fileID: 437056339066132736}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Screw Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -54679,7 +54773,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 41d9ef6c6eb8d934eb9b9f5c40a20d59, type: 2}
+  - {fileID: 2100000, guid: b8c20a6edacac4847bbfc014f395a0bc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -55576,7 +55670,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &437056339113606295
@@ -55592,7 +55686,7 @@ GameObject:
   - component: {fileID: 437056339113606280}
   - component: {fileID: 437056339113606281}
   - component: {fileID: 437056339113606294}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Stick
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55608,8 +55702,8 @@ Transform:
   m_GameObject: {fileID: 437056339113606295}
   m_LocalRotation: {x: -0.000000016530972, y: 0.000000029802315, z: 0.0000000016298142,
     w: 1}
-  m_LocalPosition: {x: 2.40649, y: -0.6740001, z: 0.4341734}
-  m_LocalScale: {x: 0.024127409, y: 1, z: 0.12543523}
+  m_LocalPosition: {x: 2.4065, y: -0.60555, z: 0.43417}
+  m_LocalScale: {x: 0.024127409, y: 0.8631589, z: 0.12543523}
   m_Children:
   - {fileID: 437056338597995142}
   m_Father: {fileID: 1190528902907062095}
@@ -55640,7 +55734,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b112e7a8de095af408f2dd7096950d81, type: 2}
+  - {fileID: 2100000, guid: 589c00095f7d1df429bbcfcc207f3afe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -55653,7 +55747,7 @@ MeshRenderer:
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
+  m_SelectedEditorRenderState: 2
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -55887,7 +55981,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &437056339317686695
@@ -55899,7 +55993,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 437056339317686694}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Sight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55915,7 +56009,7 @@ Transform:
   m_GameObject: {fileID: 437056339317686695}
   m_LocalRotation: {x: 0.00314, y: 0.8710146, z: -0.0036343643, w: -0.4912337}
   m_LocalPosition: {x: 0.0711, y: 0.1122, z: 0.0376}
-  m_LocalScale: {x: 0.08505418, y: 0.08505404, z: 0.08505421}
+  m_LocalScale: {x: 0.09727119, y: 0.097271025, z: 0.09727118}
   m_Children:
   - {fileID: 437056339830465435}
   - {fileID: 1190528902907062095}
@@ -55931,7 +56025,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 437056339344875161}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Main Screw
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55969,7 +56063,7 @@ GameObject:
   - component: {fileID: 437056339354972385}
   - component: {fileID: 437056339354972398}
   - component: {fileID: 437056339354972399}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Connecting Screw
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -56015,7 +56109,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 13a99c306a50da3468007e4e7d6a9658, type: 2}
+  - {fileID: 2100000, guid: b3d739bc5e6fa33479c350481d6e5b8d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -56028,7 +56122,7 @@ MeshRenderer:
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
+  m_SelectedEditorRenderState: 2
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -57742,7 +57836,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &437056339562896503
@@ -57754,7 +57848,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 437056339562896502}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Screw Set
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -57790,7 +57884,7 @@ GameObject:
   - component: {fileID: 437056339578490952}
   - component: {fileID: 437056339578490953}
   - component: {fileID: 437056339578490966}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Screw
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -57836,7 +57930,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 13a99c306a50da3468007e4e7d6a9658, type: 2}
+  - {fileID: 2100000, guid: b3d739bc5e6fa33479c350481d6e5b8d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -59563,7 +59657,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &437056339759761333
@@ -59579,7 +59673,7 @@ GameObject:
   - component: {fileID: 437056339759761321}
   - component: {fileID: 437056339759761334}
   - component: {fileID: 437056339759761335}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Sight Attachment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -59625,7 +59719,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b112e7a8de095af408f2dd7096950d81, type: 2}
+  - {fileID: 2100000, guid: 589c00095f7d1df429bbcfcc207f3afe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -59638,7 +59732,7 @@ MeshRenderer:
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
+  m_SelectedEditorRenderState: 2
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -61368,7 +61462,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &437056339830465444
@@ -61384,7 +61478,7 @@ GameObject:
   - component: {fileID: 437056339830465433}
   - component: {fileID: 437056339830465446}
   - component: {fileID: 437056339830465447}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Horizontal Stick
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -61432,7 +61526,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b112e7a8de095af408f2dd7096950d81, type: 2}
+  - {fileID: 2100000, guid: 589c00095f7d1df429bbcfcc207f3afe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -61445,7 +61539,7 @@ MeshRenderer:
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
+  m_SelectedEditorRenderState: 2
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -61919,7 +62013,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &437056339839850673
@@ -61935,7 +62029,7 @@ GameObject:
   - component: {fileID: 437056339839850674}
   - component: {fileID: 437056339839850675}
   - component: {fileID: 437056339839850672}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Scaler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -61982,7 +62076,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b112e7a8de095af408f2dd7096950d81, type: 2}
+  - {fileID: 2100000, guid: 589c00095f7d1df429bbcfcc207f3afe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -61995,7 +62089,7 @@ MeshRenderer:
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
+  m_SelectedEditorRenderState: 2
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -63709,7 +63803,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &437056339842468087
@@ -63725,7 +63819,7 @@ GameObject:
   - component: {fileID: 437056339842468072}
   - component: {fileID: 437056339842468073}
   - component: {fileID: 437056339842468086}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Screw Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -63771,7 +63865,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 41d9ef6c6eb8d934eb9b9f5c40a20d59, type: 2}
+  - {fileID: 2100000, guid: b8c20a6edacac4847bbfc014f395a0bc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -65498,7 +65592,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 14
   m_Mesh: {fileID: 0}
 --- !u!1 &1879901824341362038
@@ -65510,7 +65604,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1190528902907062095}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Vertical Stick
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -65526,7 +65620,7 @@ Transform:
   m_GameObject: {fileID: 1879901824341362038}
   m_LocalRotation: {x: 0.000000016530972, y: -0.000000029802315, z: -0.0000000013969835,
     w: 1}
-  m_LocalPosition: {x: -0.000026333422, y: 0, z: 0.000076683835}
+  m_LocalPosition: {x: -0, y: -0.08, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 437056339113606282}
