@@ -5,52 +5,75 @@ using UnityEngine.SocialPlatforms;
 
 public class ProjectileArrow : MonoBehaviour
 {
+    ///<header>Collision Constraints</header>
+    [Header("Collision Detection:")]
+
     [Tooltip("The layer that the arrow can collide with.")]
-    [SerializeField] private LayerMask collisionsOnLayer;
+    [SerializeField] private LayerMask collideOnLayers;
+
+    [Tooltip("The percent of the arrow that will stuck in the target.")]
+    [SerializeField] [Range(0, 1f)] private float thrustDepth = .15f;
+
+    ///<header>Camera Constraints</header>
+    [Header("Camera:")]
 
     [Tooltip("The time it takes the camera to finish escorting the arrow after launch.")]
-    [SerializeField] private float escortTime = 2.5f;
+    [SerializeField] private float escortTime = 2;
 
-    [Tooltip("Pitch the arrow by a fixed angle once per frame (arond the 'x' axis).")]
-    [SerializeField] [Range(0, 45f)] private float pitchAngle = 13f;
+    ///<header>Force Constraints</header>
+    [Header("Force:")]
+
+    [Tooltip("The minimum force the arrow can be launched at (as a function of distance).")]
+    [SerializeField] private float minForce = 30;
+
+    [Tooltip("The maximum force the arrow can be launched at (as a function of distance).")]
+    [SerializeField] private float maxForce = 100;
+
+    ///<header>Turbulence Constaints</header>
+    [Header("Turbulence:")]
 
     [Tooltip("Spin the arrow by a fixed angle once per frame (arond the 'z' axis).")]
     [SerializeField] [Range(0, 359f)] private float spinAngle = 10;
 
-    [Tooltip("Yaw the arrow back and forth by a fixed angle once per frame (around the 'y' axis).")]
-    [SerializeField] [Range(0, 10f)] private float yawAngle = 1;
+    [Tooltip("Yaw the arrow back and forth by a fixed angle once per frame (over the 'y' axis).")]
+    [SerializeField] [Range(0, 10f)] private float yawAngle = 2;
 
     [Tooltip("The amount of frames taken to yaw the arrow once (to one side).")]
-    [SerializeField] [Range(0, 5)] private int yawRate = 24;
+    [SerializeField] [Range(0, 5)] private int yawRate = 3;
 
-    private readonly long MAX_FLIGHT_DISTANCE = 100000;
-    private readonly int NORMAL_HEIGHT_SAMPLES = 10;
+    private readonly string PARENT_OBJECT_NAME = "Projectile Container";
+    private readonly string SPHERE_NAVIGATOR_NAME = "Navigator";
+    private readonly long MAX_FLIGHT_DISTANCE = 100_000;
+    private readonly long DISTANCE_OF_MAX_FORCE = 1000;
+    private readonly float MAX_FORCE_DECAY_PERCENT = 30;
+    private readonly float ANCHOR_SCALE = .03f;
 
     private Rigidbody rigidBody;
     private CameraManager camManager;
-    private GameObject arrowCamera;
+    private GameObject arrowCamera, carrier, navigator, anchor;
     private ProjectileManager projManager;
-    private ArrowNavigator navigator;
     private ShootingSessionManager shootManager;
     private Quaternion lastRotation;
-    private Vector3 hitPoint, lastPosition;
-    private List<float> sampledHeights;
-    private float normalHeight, timeRemainder;
+    private Vector3 launchPoint;
+    private float arrowLength, timeRemainder;
+    private float launchAngle, finalAngle;
+    private float force, distance, pathPercent;
     private bool hit, freeFlight, yawFlag;
     private int yawCounter;
 
     private void OnEnable() {
-        this.sampledHeights = new List<float>();
-        this.normalHeight = -1;
+        //check that minimum and maximum force are legal values
+        if (minForce > maxForce) maxForce = minForce + 1;
+
+        this.rigidBody = GetComponent<Rigidbody>();
         this.timeRemainder = escortTime;
         this.lastRotation = transform.rotation;
-        this.lastPosition = transform.position;
+        this.launchPoint = transform.position;
+        this.pathPercent = 0;
+
+        //turbulence
         this.yawCounter = 0;
         this.yawFlag = true;
-
-        //enable the arrow's collider
-        this.rigidBody = GetComponent<Rigidbody>();
-        rigidBody.velocity = Vector3.zero;
 
         //switch to the arrow camera view
         GameObject monitor = GameObject.FindGameObjectWithTag("Player Monitor");
@@ -60,24 +83,52 @@ public class ProjectileArrow : MonoBehaviour
         this.camManager = monitor.GetComponent<CameraManager>();
         shootManager.EnterCamAnimation(true);
 
-        //generate a hit point
-        float length = GetComponent<MeshRenderer>().bounds.size.z;
-        this.hitPoint = GenerateHitPoint();
+        //generate a navigator
+        this.arrowLength = GetComponent<MeshRenderer>().bounds.size.z;
+        Vector3 hitPoint = GenerateHitPoint();
 
-        //shorten distance by the projectile length and thrust perecent
-        //hitPoint += (thrust - length) * directionVector;
-        
-        //generate a physical navigator
         RotateArrow(hitPoint);
-        this.navigator = GetComponent<ArrowNavigator>();
-        navigator.GenerateSphere(transform.position, hitPoint, length);
+        InitNavigationUnit(hitPoint);
+        this.launchAngle = transform.eulerAngles.x;
+        if (launchAngle > 90) launchAngle -= 360;
+        this.finalAngle = CalculateFinalAngle(launchAngle);
+    }
+
+    /// <summary>
+    /// Initialize the objects that navigate the arrow around the scene.
+    /// </summary>
+    /// <param name="hitPoint">The point that the arrow should eventually hit</param>
+    private void InitNavigationUnit(Vector3 hitPoint) {
+        this.distance = Vector3.Distance(transform.position, hitPoint);
+        this.force = CalculateForce(distance);
+
+        this.carrier = new GameObject(PARENT_OBJECT_NAME);
+        carrier.transform.position = transform.position;
+        carrier.transform.LookAt(hitPoint);
+        transform.SetParent(carrier.transform);
+
+        this.navigator = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        navigator.name = SPHERE_NAVIGATOR_NAME;
+        navigator.GetComponent<SphereCollider>().enabled = false;
+        navigator.GetComponent<MeshRenderer>().enabled = false;
+        navigator.transform.localScale *= distance * 2;
+        navigator.transform.position = transform.position;
+        navigator.transform.LookAt(hitPoint);
+        navigator.transform.SetParent(carrier.transform);
+
+        this.anchor = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        anchor.GetComponent<SphereCollider>().enabled = false;
+        anchor.GetComponent<MeshRenderer>().enabled = false;
+        anchor.transform.localScale *= ANCHOR_SCALE;
+        anchor.transform.position = hitPoint;
+        anchor.transform.SetParent(navigator.transform);
     }
 
     private void Update() {
-        navigator.Align();
-
         if (!hit) {
-            if (navigator.Navigate(Time.deltaTime)) Freeze(null); //reached hit point
+            if (Navigate(Time.deltaTime)) Freeze(null); //reached hit point
+            navigator.transform.localPosition = transform.localPosition; //align navigator
+            Pitch();
             Spin();
             Yaw();
         }
@@ -87,62 +138,128 @@ public class ProjectileArrow : MonoBehaviour
             if (timeRemainder <= 0) Finish();
         }
 
-        //PreventArrowJump(); //prevent strange transform spikes
-
-        //save last transform properties
-        lastPosition = transform.position;
         lastRotation = transform.rotation;
     }
 
     /// <summary>
-    /// Destory unnecessary components of the arrow and progress the shooting round.
+    /// Move the arrow around the scene towards the hit point.
     /// </summary>
-    private void Finish() {
-        shootManager.ExitCamAnimation(true, CameraEnabler.Tag.FirstPerson, false);
-        camManager.DestroyCam(arrowCamera);
-        projManager.DestroyLastSpawned();
-        enabled = false;
+    /// <param name="delta">Frame rate delta time</param>
+    /// <returns>True if the arrow has reached the final hit point.</returns>
+    private bool Navigate(float delta) {
+        //align the navigator sphere with the arrow
+        Vector3 navigatorPos = navigator.transform.localPosition;
+        navigator.transform.localPosition = new Vector3(navigatorPos.x, 0, navigatorPos.z);
+
+        //rotate the arrow towards the anchor point
+        Vector3 anchorPoint = anchor.transform.position;
+
+        //move the arrow towards the anchor and save the distance it made
+        Vector3 lastPosition = carrier.transform.position;
+        float currentDistance = Vector3.Distance(lastPosition, anchorPoint);
+        float decayedforce = DecayForce(force, currentDistance);
+        carrier.transform.position = Vector3.MoveTowards(lastPosition, anchorPoint, delta * decayedforce);
+        pathPercent = CalculatePathPercent(currentDistance);
+
+        //check if arrow is yet to reach the anchor point
+        if (!HasReachPoint(launchPoint, carrier.transform.position, anchorPoint)) {
+            float diff = Vector3.Distance(carrier.transform.position, lastPosition) * 2;
+            Vector3 diffVector = Vector3.one * diff;
+
+            //relatively scale down the navigator sphere
+            float thrustedArrowLength = arrowLength * (2 - (1 - thrustDepth));
+            if (navigator.transform.localScale.x > thrustedArrowLength)
+                navigator.transform.localScale -= diffVector;
+
+            return false;
+        }
+        else return true; //reach anchor point
     }
 
-    private void OnCollisionEnter(Collision collision) {
-        print("collision");
-        Freeze(collision.collider);
-    }
-
-    private void OnTriggerEnter(Collider collider) {
-        Freeze(collider);
-    }
-
-    private void Freeze(Collider collider) {
-        if (!hit && CollisionIsAllowed(collider, collisionsOnLayer.value)) {
-            hit = true;
-
-            //let other objects sense the arrow's collider
-            GetComponent<BoxCollider>().isTrigger = false;
-
-            //stick to the target
-            rigidBody.constraints = RigidbodyConstraints.FreezeAll;
-            transform.rotation = lastRotation;
-
-            //free flight arrow gets extra escort time
-            if (freeFlight) timeRemainder = escortTime;
+    /// <summary>
+    /// Calculate the current force of the arrow, considering the remaining distance from the hit point.
+    /// </summary>
+    /// <param name="force">The starting launch force</param>
+    /// <param name="currentDistance">Current distance from the hit point</param>
+    /// <returns>A decreased flight force.</returns>
+    private float DecayForce(float force, float currentDistance) {
+        //arrow is very close to the target - slow down
+        float distanceTrigger = arrowLength * 2;
+        if (currentDistance <= distanceTrigger || CalculateTargetDistance() <= distanceTrigger)
+            return distanceTrigger;
+        else {
+            float remainForce = 100 - (pathPercent * MAX_FORCE_DECAY_PERCENT / 100);
+            return force * remainForce / 100;
         }
     }
 
-    private void Exhaust() {
-        float alpha = pitchAngle;
-        Vector3 difference = transform.position - lastPosition;
-        Vector3 lookPoint = new Vector3(0,
-                                        difference.z * Mathf.Tan(alpha),
-                                        difference.z - difference.z / Mathf.Cos(alpha));
+    /// <returns>The distance from the closest target that the arrow is about to hit</returns>
+    private float CalculateTargetDistance() {
+        Vector3 forwardVector = Vector3.Normalize(anchor.transform.position - transform.position);
+        Ray ray = new Ray(transform.position, forwardVector);
+        bool rayCast = Physics.Raycast(ray, out RaycastHit rayHit, distance, collideOnLayers);
 
-        transform.rotation = Quaternion.LookRotation(transform.position + lookPoint, Vector3.up);   
+        if (rayCast && rayHit.collider != null) return rayHit.distance;
+        else return navigator.transform.localScale.x;
     }
 
+    /// <returns>The percentage of the total distance that the arrow has already passed.</returns>
+    private float CalculatePathPercent(float currentDistance) {
+        float passedDistance = distance - currentDistance;
+        return passedDistance / distance * 100;
+    }
+
+    /// <summary>
+    /// Calculate the force needed to launch the arrow considering the distance it's ought to fly.
+    /// </summary>
+    /// <param name="distance">The distance to the hit point</param>
+    /// <returns>A starting force for the arrow.</returns>
+    private float CalculateForce(float distance) {
+        float distancePercent = Mathf.Clamp(distance / DISTANCE_OF_MAX_FORCE * 100, 0, 250);
+        return (distancePercent * (maxForce - minForce) / 100) + minForce;
+    }
+
+    /// <summary>
+    /// Calculate the angle that the arrow should eventually land at.
+    /// </summary>
+    /// <param name="launchAngle">The angle in which the arrow had been launched at</param>
+    /// <returns>The angle that the arrow should land at.</returns>
+    private float CalculateFinalAngle(float launchAngle) {
+        if (launchAngle < 0) return -launchAngle;
+        else return launchAngle * 2;
+    }
+
+    /// <summary>
+    /// Rotate the arrow around the 'x' axis.
+    /// </summary>
+    private void Pitch() {
+        float pitchRange;
+        if (launchAngle < 0) pitchRange = Mathf.Abs(launchAngle) + finalAngle;
+        else pitchRange = finalAngle - launchAngle;
+        float pitchAddition = pathPercent * pitchRange / 100;
+        float newPitch = launchAngle + pitchAddition;
+
+        //rotate navigator - for the arrow to fall down
+        navigator.transform.rotation = Quaternion.Euler(newPitch,
+                                                        navigator.transform.eulerAngles.y,
+                                                        navigator.transform.eulerAngles.z);
+
+        //rotate the arrow - for the pitch effect
+        transform.rotation = Quaternion.Euler(newPitch,
+                                              transform.eulerAngles.y,
+                                              transform.eulerAngles.z);
+    }
+
+    /// <summary>
+    /// Rotate the arrow around the 'z' axis.
+    /// </summary>
     private void Spin() {
         transform.Rotate(0, 0, spinAngle);
     }
 
+    /// <summary>
+    /// Yaw the arrow back and forth over the 'y' axis.
+    /// </summary>
     private void Yaw() {
         yawCounter++;
 
@@ -152,29 +269,6 @@ public class ProjectileArrow : MonoBehaviour
 
             yawFlag = !yawFlag;
             yawCounter = 0;
-        }
-    }
-
-    /// <summary>
-    /// Find the target that the sight is pointing at, and rotate towards it.
-    /// Prevent the arrow from dramatically changing its 'y' axis position.
-    /// </summary>
-    private void PreventArrowJump() {
-        float lastHeight = lastPosition.y;
-
-        if (normalHeight != -1 && Mathf.Abs(transform.position.y - lastHeight) > normalHeight)
-            transform.position = new Vector3(transform.position.x, lastHeight, transform.position.z);
-        else {
-            //add last height to the list of sampled heights
-            if (sampledHeights.Count < NORMAL_HEIGHT_SAMPLES) sampledHeights.Add(lastHeight);
-
-            //calculate average height using the samples
-            else if (normalHeight == -1) {
-                for (int i = 1; i < NORMAL_HEIGHT_SAMPLES; i++)
-                    normalHeight += Mathf.Abs(sampledHeights[i] - sampledHeights[i - 1]);
-
-                normalHeight /= NORMAL_HEIGHT_SAMPLES;
-            }
         }
     }
 
@@ -190,10 +284,8 @@ public class ProjectileArrow : MonoBehaviour
 
         //shoot a straight ray from the center of the camera
         Ray ray = new Ray(camTransform.position, camTransform.forward);
+        bool rayCast = Physics.Raycast(ray, out RaycastHit rayHit, Mathf.Infinity, collideOnLayers);
         Vector3 point;
-
-        //find direction
-        bool rayCast = Physics.Raycast(ray, out RaycastHit rayHit, Mathf.Infinity, collisionsOnLayer);
 
         if (rayCast && rayHit.collider != null) point = rayHit.point; //known direction
         else { //free flight
@@ -216,6 +308,19 @@ public class ProjectileArrow : MonoBehaviour
     }
 
     /// <summary>
+    /// Chech if the arrow has reached its final hit point.
+    /// </summary>
+    /// <param name="sourcePoint">The point from which the arrow had been launched</param>
+    /// <param name="pointA">The current position of the arrow</param>
+    /// <param name="pointB">The current position of the final hit point</param>
+    /// <returns>True if the arrow has reached the final hit point.</returns>
+    private bool HasReachPoint(Vector3 sourcePoint, Vector3 pointA, Vector3 pointB) {
+        float originDistance = Vector3.Distance(sourcePoint, pointB);
+        float passedDistance = Vector3.Distance(sourcePoint, pointA);
+        return passedDistance >= originDistance;
+    }
+
+    /// <summary>
     /// Check if a collision is made with the right layer,
     /// and also that the collider isn't set to trigger.
     /// </summary>
@@ -227,5 +332,44 @@ public class ProjectileArrow : MonoBehaviour
 
         bool notTrigger = !collider.isTrigger;
         return notTrigger && (1 << collider.gameObject.layer) == layer;
+    }
+
+    private void OnCollisionEnter(Collision collision) {
+        Freeze(collision.collider);
+    }
+
+    private void OnTriggerEnter(Collider collider) {
+        Freeze(collider);
+    }
+
+    /// <summary>
+    /// Freeze the arrow in its current position and rotation.
+    /// This method is irreversible.
+    /// </summary>
+    /// <param name="collider">The collider that the arrow hit (null if it hit nothing)</param>
+    private void Freeze(Collider collider) {
+        if (!hit && CollisionIsAllowed(collider, collideOnLayers.value)) {
+            hit = true;
+
+            //let other objects sense the arrow's collider
+            GetComponent<BoxCollider>().isTrigger = false;
+
+            //stick to the target
+            rigidBody.constraints = RigidbodyConstraints.FreezeAll;
+            transform.rotation = lastRotation;
+
+            //free flight arrow gets extra escort time
+            if (freeFlight) timeRemainder = escortTime;
+        }
+    }
+
+    /// <summary>
+    /// Destory unnecessary components of the arrow and progress the shooting round.
+    /// </summary>
+    private void Finish() {
+        shootManager.ExitCamAnimation(true, CameraEnabler.Tag.FirstPerson, false);
+        camManager.DestroyCam(arrowCamera);
+        projManager.DestroyLastSpawned();
+        enabled = false;
     }
 }
