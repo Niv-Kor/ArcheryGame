@@ -1,24 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Assets.Script_Tools;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ReleaseState : StateMachineBehaviour
 {
+    [Tooltip("Exit the animation after a fixed percentage of it.")]
     [SerializeField] [Range(0, 100)] private float exitAfterPercentage;
 
     private ShootingSessionManager shootSession;
     private GameObject arrow;
     private Vector3 arrowInitPos;
     private Quaternion arrowInitRot;
-    private CameraManager camManager;
     private float time, changeTime;
     private bool shot;
 
     private void OnEnable() {
-        GameObject monitor = GameObject.FindGameObjectWithTag("Player Monitor");
+        GameObject monitor = GameObject.FindGameObjectWithTag("Monitor");
         this.arrow = GameObject.FindGameObjectWithTag("Arrow");
-        this.camManager = monitor.GetComponent<CameraManager>();
         this.shootSession = monitor.GetComponent<ShootingSessionManager>();
     }
 

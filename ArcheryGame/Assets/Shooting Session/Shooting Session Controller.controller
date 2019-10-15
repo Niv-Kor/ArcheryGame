@@ -393,19 +393,19 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: draw
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: shoot
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -569,7 +569,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   exitCamera: 2
   disableAnimatorOnExit: 1
-  zoomOnExit: 1
+  zoomOnExit: 0
 --- !u!1102 &3234289979576449296
 AnimatorState:
   serializedVersion: 5

@@ -1,20 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Assets.Script_Tools;
-using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
+﻿using UnityEngine;
 
 public class LockedCameraState : StateMachineBehaviour
 {
+    [Tooltip("The camera to swith to after this animation ends.")]
     [SerializeField] private CameraEnabler.Tag exitCamera;
-    [SerializeField] private bool disableAnimatorOnExit;
-    [SerializeField] private bool zoomOnExit;
 
-    protected ShootingSessionManager shootSession;
+    [Tooltip("Disable the animator when this animation ends.")]
+    [SerializeField] private bool disableAnimatorOnExit;
+
+    private ShootingSessionManager shootSession;
 
     private void OnEnable() {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        GameObject monitor = ObjectFinder.GetChild(player, "Player Monitor");
+        GameObject monitor = GameObject.FindGameObjectWithTag("Monitor");
         this.shootSession = monitor.GetComponent<ShootingSessionManager>();
     }
 
@@ -23,6 +20,6 @@ public class LockedCameraState : StateMachineBehaviour
     }
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-        shootSession.ExitCamAnimation(disableAnimatorOnExit, exitCamera, zoomOnExit);
+        shootSession.ExitCamAnimation(disableAnimatorOnExit, exitCamera);
     }
 }

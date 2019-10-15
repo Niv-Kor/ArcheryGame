@@ -1,4 +1,4 @@
-﻿using Assets.Script_Tools;
+﻿using System;
 using UnityEngine;
 
 public class ScoreDetector : MonoBehaviour
@@ -21,9 +21,11 @@ public class ScoreDetector : MonoBehaviour
         this.scoreManager = target.GetComponent<ScoreManager>();
         this.overlapResults = new Collider[OVERLAP_OBJECTS_ALLOC];
 
-        //define a sphere collider that covers all ring area
-        GameObject color = ObjectFinder.GetChild(gameObject, "Color");
-        GameObject line = ObjectFinder.GetChild(gameObject, "Line");
+        //define a circle collider that covers all ring area
+        GameObject color = transform.Find("Color").gameObject;
+        GameObject line;
+        try { line = transform.Find("Line").gameObject; }
+        catch (NullReferenceException) { line = null;  }
         GameObject anchor = (line != null) ? line : color; //not all rings have outer lines
         this.radius = anchor.GetComponent<MeshRenderer>().bounds.size.x / 2;
         this.center = anchor.transform.position + new Vector3(-radius, 0, 0);

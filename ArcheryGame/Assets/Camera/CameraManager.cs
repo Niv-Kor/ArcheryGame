@@ -1,26 +1,19 @@
-﻿using Assets.Script_Tools;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
 
 public class CameraManager : MonoBehaviour
 {
-    [SerializeField] public Camera firstPersonCam;
-    [SerializeField] private List<GameObject> cameraObjects;
-    [SerializeField] [Range(0, 100)] private float zoomPercent;
-
-    private static readonly float DEFAULT_FIELD_OF_VIEW = 60;
-
     private RigidbodyFirstPersonController playerController;
     private CameraEnabler.Tag currentCameraTag;
     private Camera currentCamera;
+    private List<GameObject> cameraObjects;
     private ProjectileManager projManager;
 
     private void Start() {
-        GameObject player = GameObject.FindWithTag("Player");
-        GameObject monitor = GameObject.FindWithTag("Player Monitor");
-        this.playerController = player.GetComponent<RigidbodyFirstPersonController>();
-        this.projManager = monitor.GetComponent<ProjectileManager>();
+        this.cameraObjects = FindCameraObjects();
+        this.playerController = FindObjectOfType<RigidbodyFirstPersonController>();
+        this.projManager = GetComponent<ProjectileManager>();
         this.currentCameraTag = CameraEnabler.Tag.None;
         ChangeCam(CameraEnabler.Tag.ThirdPerson);
     }
@@ -37,7 +30,7 @@ public class CameraManager : MonoBehaviour
             GameObject lastSpawnedArrow = projManager.GetLastSpawned();
 
             if (lastSpawnedArrow != null) {
-                GameObject arrowCam = ObjectFinder.GetChild(lastSpawnedArrow, "Camera");
+                GameObject arrowCam = lastSpawnedArrow.transform.Find("Camera").gameObject;
                 ChangeCam(camTag, arrowCam);
             }
             else ChangeCam(CameraEnabler.Tag.None);
@@ -59,6 +52,16 @@ public class CameraManager : MonoBehaviour
                 if (camTag != CameraEnabler.Tag.Arrow) playerController.cam = currentCamera;
             }
         }
+    }
+
+    private List<GameObject> FindCameraObjects() {
+        Camera[] cameraComponents = FindObjectsOfType<Camera>();
+        List<GameObject> cameraObjects = new List<GameObject>();
+
+        foreach (Camera cam in cameraComponents)
+            cameraObjects.Add(cam.gameObject);
+
+        return cameraObjects;
     }
 
     /// <param name="camTag">The tag of the requested camera</param>
@@ -92,35 +95,6 @@ public class CameraManager : MonoBehaviour
     /// <param name="cam">The camera to remove</param>
     public void DestroyCam(GameObject cam) {
         cameraObjects.Remove(cam);
-    }
-
-    /// <summary>
-    /// Zoom with the first person camera.
-    /// </summary>
-    /// <param name="flag">True to zoom in or false to zoom out back to default</param>
-    public void SetZoom(bool flag) {
-        if (currentCamera == null) return;
-        currentCamera.fieldOfView = flag ? GetPhysicalZoom() : DEFAULT_FIELD_OF_VIEW;
-    }
-
-    /// <summary>
-    /// Zoom with the first person camera.
-    /// </summary>
-    /// <param name="flag">True to zoom in or false to zoom out back to default</param>
-    /// <param name="cam,">The camera to zoom in or out</param>
-    public void SetZoom(bool flag, Camera cam=null) {
-        Camera zoomedCamera = (cam != null) ? cam : currentCamera;
-        if (currentCamera == null) return;
-
-        zoomedCamera.fieldOfView = flag ? GetPhysicalZoom() : DEFAULT_FIELD_OF_VIEW;
-    }
-
-    /// <summary>
-    /// Get the maximal zoom of a camera (based on the "Zoom Percent" field).
-    /// </summary>
-    public float GetPhysicalZoom() {
-        float subtraction = (DEFAULT_FIELD_OF_VIEW / 100) * zoomPercent;
-        return DEFAULT_FIELD_OF_VIEW - subtraction;
     }
 
     /// <returns>The current main camera object.</returns>

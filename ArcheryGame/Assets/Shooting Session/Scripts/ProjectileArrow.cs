@@ -1,6 +1,4 @@
-﻿using Assets.Script_Tools;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SocialPlatforms;
 
 public class ProjectileArrow : MonoBehaviour
@@ -30,7 +28,7 @@ public class ProjectileArrow : MonoBehaviour
     [SerializeField] private float maxForce = 100;
 
     ///<header>Turbulence Constaints</header>
-    [Header("Turbulence:")]
+    [Header("Turbulence and Deviation:")]
 
     [Tooltip("Spin the arrow by a fixed angle once per frame (arond the 'z' axis).")]
     [SerializeField] [Range(0, 359f)] private float spinAngle = 10;
@@ -41,10 +39,12 @@ public class ProjectileArrow : MonoBehaviour
     [Tooltip("The amount of frames taken to yaw the arrow once (to one side).")]
     [SerializeField] [Range(0, 5)] private int yawRate = 3;
 
+    [Tooltip("Deviation of the arrow's flight caused by an external force.")]
+    [SerializeField] private Vector2 externalForce;
+
     private readonly string PARENT_OBJECT_NAME = "Projectile Container";
     private readonly string SPHERE_NAVIGATOR_NAME = "Navigator";
-    private readonly long MAX_FLIGHT_DISTANCE = 100_000;
-    private readonly long DISTANCE_OF_MAX_FORCE = 1000;
+    private readonly long DISTANCE_OF_MAX_FORCE = 200;
     private readonly float MAX_FORCE_DECAY_PERCENT = 30;
     private readonly float ANCHOR_SCALE = .03f;
 
@@ -76,8 +76,8 @@ public class ProjectileArrow : MonoBehaviour
         this.yawFlag = true;
 
         //switch to the arrow camera view
-        GameObject monitor = GameObject.FindGameObjectWithTag("Player Monitor");
-        this.arrowCamera = ObjectFinder.GetChild(gameObject, "Camera");
+        GameObject monitor = GameObject.FindGameObjectWithTag("Monitor");
+        this.arrowCamera = transform.Find("Camera").gameObject;
         this.projManager = monitor.GetComponent<ProjectileManager>();
         this.shootManager = monitor.GetComponent<ShootingSessionManager>();
         this.camManager = monitor.GetComponent<CameraManager>();
@@ -86,12 +86,14 @@ public class ProjectileArrow : MonoBehaviour
         //generate a navigator
         this.arrowLength = GetComponent<MeshRenderer>().bounds.size.z;
         Vector3 hitPoint = GenerateHitPoint();
+        this.distance = Vector3.Distance(transform.position, hitPoint);
+        this.force = CalculateForce(distance);
 
         RotateArrow(hitPoint);
         InitNavigationUnit(hitPoint);
         this.launchAngle = transform.eulerAngles.x;
         if (launchAngle > 90) launchAngle -= 360;
-        this.finalAngle = CalculateFinalAngle(launchAngle);
+        this.finalAngle = CalculateFinalAngle(launchAngle, force);
     }
 
     /// <summary>
@@ -99,9 +101,6 @@ public class ProjectileArrow : MonoBehaviour
     /// </summary>
     /// <param name="hitPoint">The point that the arrow should eventually hit</param>
     private void InitNavigationUnit(Vector3 hitPoint) {
-        this.distance = Vector3.Distance(transform.position, hitPoint);
-        this.force = CalculateForce(distance);
-
         this.carrier = new GameObject(PARENT_OBJECT_NAME);
         carrier.transform.position = transform.position;
         carrier.transform.LookAt(hitPoint);
@@ -126,7 +125,7 @@ public class ProjectileArrow : MonoBehaviour
 
     private void Update() {
         if (!hit) {
-            if (Navigate(Time.deltaTime)) Freeze(null); //reached hit point
+            Navigate(Time.deltaTime);
             navigator.transform.localPosition = transform.localPosition; //align navigator
             Pitch();
             Spin();
@@ -145,23 +144,16 @@ public class ProjectileArrow : MonoBehaviour
     /// Move the arrow around the scene towards the hit point.
     /// </summary>
     /// <param name="delta">Frame rate delta time</param>
-    /// <returns>True if the arrow has reached the final hit point.</returns>
-    private bool Navigate(float delta) {
-        //align the navigator sphere with the arrow
-        Vector3 navigatorPos = navigator.transform.localPosition;
-        navigator.transform.localPosition = new Vector3(navigatorPos.x, 0, navigatorPos.z);
-
-        //rotate the arrow towards the anchor point
-        Vector3 anchorPoint = anchor.transform.position;
-
+    private void Navigate(float delta) {
         //move the arrow towards the anchor and save the distance it made
+        Vector3 anchorPoint = anchor.transform.position;
         Vector3 lastPosition = carrier.transform.position;
         float currentDistance = Vector3.Distance(lastPosition, anchorPoint);
-        float decayedforce = DecayForce(force, currentDistance);
+        float decayedforce = DecayForce(delta, force, CalculateTargetDistance());
         carrier.transform.position = Vector3.MoveTowards(lastPosition, anchorPoint, delta * decayedforce);
         pathPercent = CalculatePathPercent(currentDistance);
 
-        //check if arrow is yet to reach the anchor point
+        //check if the arrow is yet to reach the anchor point
         if (!HasReachPoint(launchPoint, carrier.transform.position, anchorPoint)) {
             float diff = Vector3.Distance(carrier.transform.position, lastPosition) * 2;
             Vector3 diffVector = Vector3.one * diff;
@@ -170,23 +162,24 @@ public class ProjectileArrow : MonoBehaviour
             float thrustedArrowLength = arrowLength * (2 - (1 - thrustDepth));
             if (navigator.transform.localScale.x > thrustedArrowLength)
                 navigator.transform.localScale -= diffVector;
-
-            return false;
         }
-        else return true; //reach anchor point
     }
 
     /// <summary>
     /// Calculate the current force of the arrow, considering the remaining distance from the hit point.
     /// </summary>
+    /// <param name="delta">Frame rate delta time</param>
     /// <param name="force">The starting launch force</param>
     /// <param name="currentDistance">Current distance from the hit point</param>
     /// <returns>A decreased flight force.</returns>
-    private float DecayForce(float force, float currentDistance) {
-        //arrow is very close to the target - slow down
-        float distanceTrigger = arrowLength * 2;
-        if (currentDistance <= distanceTrigger || CalculateTargetDistance() <= distanceTrigger)
-            return distanceTrigger;
+    private float DecayForce(float delta, float force, float currentDistance) {
+        float distanceTrigger = arrowLength * 2; //longest distance that's not allowed
+
+        if (currentDistance <= distanceTrigger || CalculateTargetDistance() <= distanceTrigger) {
+            float thrustLength = Mathf.Clamp(thrustDepth, .2f, thrustDepth) * arrowLength;
+            float remainDistance = currentDistance - arrowLength + thrustLength;
+            return remainDistance / delta; //neutralize the delta parameter to move the exact distance
+        }
         else {
             float remainForce = 100 - (pathPercent * MAX_FORCE_DECAY_PERCENT / 100);
             return force * remainForce / 100;
@@ -224,9 +217,22 @@ public class ProjectileArrow : MonoBehaviour
     /// </summary>
     /// <param name="launchAngle">The angle in which the arrow had been launched at</param>
     /// <returns>The angle that the arrow should land at.</returns>
-    private float CalculateFinalAngle(float launchAngle) {
-        if (launchAngle < 0) return -launchAngle;
-        else return launchAngle * 2;
+    private float CalculateFinalAngle(float launchAngle, float force) {
+        float angleRange;
+
+        if (launchAngle < 0) {
+            float maximalAngle = -launchAngle;
+            angleRange = Mathf.Abs(launchAngle) + maximalAngle;
+        }
+        else {
+            float maximalAngle = launchAngle * 2;
+            angleRange = maximalAngle - launchAngle;
+        }
+
+        float forcePercent = (force - minForce) / (maxForce - minForce) * 100;
+        forcePercent = Mathf.Clamp(forcePercent, 0, 100);
+        float angleAddition = forcePercent * angleRange / 100;
+        return launchAngle + angleAddition;
     }
 
     /// <summary>
@@ -278,18 +284,19 @@ public class ProjectileArrow : MonoBehaviour
     /// <returns>The point that the arrow should hit.</returns>
     private Vector3 GenerateHitPoint() {
         //reference the first person camera
-        GameObject monitor = GameObject.FindGameObjectWithTag("Player Monitor");
-        CameraManager camManager = monitor.GetComponent<CameraManager>();
-        Transform camTransform = camManager.firstPersonCam.transform;
+        CameraManager camManager = FindObjectOfType<CameraManager>();
+        Transform camTransform = camManager.GetCam(CameraEnabler.Tag.FirstPerson).transform;
+        Vector3 viewerPos = camTransform.position + (Vector3) externalForce;
 
         //shoot a straight ray from the center of the camera
-        Ray ray = new Ray(camTransform.position, camTransform.forward);
+        Ray ray = new Ray(viewerPos, camTransform.forward);
         bool rayCast = Physics.Raycast(ray, out RaycastHit rayHit, Mathf.Infinity, collideOnLayers);
         Vector3 point;
 
-        if (rayCast && rayHit.collider != null) point = rayHit.point; //known direction
+        //known direction
+        if (rayCast && rayHit.collider != null) point = rayHit.point; 
         else { //free flight
-            point = ray.GetPoint(MAX_FLIGHT_DISTANCE);
+            point = ray.GetPoint(DISTANCE_OF_MAX_FORCE);
             freeFlight = true;
             timeRemainder *= 2;
         }
@@ -367,7 +374,7 @@ public class ProjectileArrow : MonoBehaviour
     /// Destory unnecessary components of the arrow and progress the shooting round.
     /// </summary>
     private void Finish() {
-        shootManager.ExitCamAnimation(true, CameraEnabler.Tag.FirstPerson, false);
+        shootManager.ExitCamAnimation(true, CameraEnabler.Tag.FirstPerson);
         camManager.DestroyCam(arrowCamera);
         projManager.DestroyLastSpawned();
         enabled = false;

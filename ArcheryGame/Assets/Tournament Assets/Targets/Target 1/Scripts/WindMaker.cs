@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class WindMaker : MonoBehaviour
 {
-    [SerializeField] [Range(0, 5)] private float wildMovement;
+    [Tooltip("How wild is the flag's movement.")]
+    [SerializeField] [Range(0, 5)] private float wildness;
 
     private Cloth cloth;
     private float wildTime;
@@ -17,7 +16,7 @@ public class WindMaker : MonoBehaviour
         wildTime -= Time.deltaTime;
 
         if (wildTime <= 0) {
-            wildTime = 5 - wildMovement;
+            wildTime = 5 - wildness;
             cloth.useGravity = !cloth.useGravity;
         }      
     }

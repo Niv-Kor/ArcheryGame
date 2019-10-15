@@ -9,11 +9,11 @@ TagManager:
   - Shooting Spot
   - Avatar
   - Camera
-  - Player Monitor
   - Bow
   - Arrow
   - Sight Point
   - Fire
+  - Monitor
   layers:
   - Default
   - TransparentFX

@@ -1,10 +1,10 @@
-﻿using Assets.Script_Tools;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
 using Input = UnityEngine.Input;
 
 public class ShootingSessionManager : MonoBehaviour
 {
+    [Tooltip("The arrow object that's suppose to be fired")]
     [SerializeField] private GameObject drawnArrow;
 
     private readonly string STANCE_PARAM = "stance";
@@ -13,20 +13,20 @@ public class ShootingSessionManager : MonoBehaviour
 
     private Animator animator;
     private RigidbodyFirstPersonController playerController;
+    private ProjectileManager projManager;
     private CameraManager camManager;
-    private GameObject player;
+    private GameObject player, firstPersonCam;
     private GameObject arrowInstance, arrowInstanceCam;
     private bool isShooting, isPulling;
-    private ProjectileManager projManager;
     
     private void Start() {
+        GameObject monitor = GameObject.FindGameObjectWithTag("Monitor");
         this.animator = gameObject.GetComponent<Animator>();
         this.player = GameObject.FindGameObjectWithTag("Player");
         this.playerController = player.GetComponent<RigidbodyFirstPersonController>();
-
-        GameObject monitor = GameObject.FindGameObjectWithTag("Player Monitor");
         this.projManager = monitor.GetComponent<ProjectileManager>();
         this.camManager = monitor.GetComponent<CameraManager>();
+        this.firstPersonCam = camManager.GetCam(CameraEnabler.Tag.FirstPerson);
         this.isShooting = false;
         this.isPulling = false;
     }
@@ -47,6 +47,7 @@ public class ShootingSessionManager : MonoBehaviour
                     //destroy the newly created arrow
                     projManager.DestroyLastSpawned();
                     camManager.DestroyCam(arrowInstanceCam);
+                    firstPersonCam.GetComponent<ZoomController>().Reset();
 
                     //enable animation
                     EnterCamAnimation(true);
@@ -57,6 +58,7 @@ public class ShootingSessionManager : MonoBehaviour
                 else if (Input.GetMouseButtonUp(0)) {
                     EnterCamAnimation(true);
                     animator.SetBool(SHOOT_PARAM, true);
+                    firstPersonCam.GetComponent<ZoomController>().Reset();
                     isPulling = false;
                 }
             }
@@ -68,7 +70,6 @@ public class ShootingSessionManager : MonoBehaviour
 
                     //enable animation
                     EnterCamAnimation(true);
-                    drawnArrow.SetActive(true);
                     animator.SetBool(DRAW_PARAM, true);
                     isPulling = true;
                 }
@@ -104,12 +105,11 @@ public class ShootingSessionManager : MonoBehaviour
     /// <param name="disableAnimatorOnExit">True to disable the animator and apply full game control</param>
     /// <param name="exitToCamera">The camera to change to</param>
     /// <param name="zoomOnExit">True to zoom in with the first person camera</param>
-    public void ExitCamAnimation(bool disableAnimatorOnExit, CameraEnabler.Tag exitToCamera, bool zoomOnExit) {
+    public void ExitCamAnimation(bool disableAnimatorOnExit, CameraEnabler.Tag exitToCamera) {
         camManager.ChangeCam(exitToCamera);
         animator.enabled = !disableAnimatorOnExit;
         playerController.EnableMouseRotation(true);
         playerController.EnableMovement(!isShooting);
-        camManager.SetZoom(zoomOnExit);
     }
     
     /// <summary>
@@ -130,7 +130,7 @@ public class ShootingSessionManager : MonoBehaviour
         arrowInstance = Instantiate(drawnArrow);
         AlignArrowInstance();
 
-        arrowInstanceCam = ObjectFinder.GetChild(arrowInstance, "Camera");
+        arrowInstanceCam = arrowInstance.transform.Find("Camera").gameObject;
         arrowInstance.SetActive(false);
         projManager.Spawn(arrowInstance);
         camManager.AddCam(arrowInstanceCam);
@@ -144,7 +144,7 @@ public class ShootingSessionManager : MonoBehaviour
     public void Shoot(Vector3 arrowPos, Quaternion arrowRot) {
         animator.SetBool(SHOOT_PARAM, false);
         animator.SetBool(DRAW_PARAM, false);
-        ExitCamAnimation(false, CameraEnabler.Tag.Arrow, false);
+        ExitCamAnimation(false, CameraEnabler.Tag.Arrow);
         arrowInstance.transform.position = arrowPos;
         arrowInstance.transform.rotation = arrowRot;
         arrowInstance.SetActive(true);

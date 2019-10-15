@@ -1,8 +1,4 @@
-﻿using System;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
-using Assets.Script_Tools;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
 
 public class Player : MonoBehaviour
@@ -28,21 +24,22 @@ public class Player : MonoBehaviour
     [SerializeField] [Range(0f, 5f)] private float accelerationRate = 0.1f;
 
     private Animator animator;
-    private RigidbodyFirstPersonController rigidbody;
+    private RigidbodyFirstPersonController rigidBody;
     private ShootingSessionManager shootSession;
     private bool leaveJumpKey, isJumping, onShootingSpot;
     private CrowdManager[] crowds;
     private float defJump;
 
     private void Start() {
-        this.animator = ObjectFinder.GetChild(gameObject, "Avatar").GetComponent<Animator>();
-        this.rigidbody = GetComponentInParent<RigidbodyFirstPersonController>();
-        rigidbody.movementSettings.RunMultiplier = 0;
+        GameObject avatar = transform.Find("Avatar").gameObject;
+        this.animator = avatar.GetComponent<Animator>();
+        this.rigidBody = GetComponentInParent<RigidbodyFirstPersonController>();
+        rigidBody.movementSettings.RunMultiplier = 0;
 
-        GameObject cameraObj = GameObject.FindWithTag("Player Monitor");
+        GameObject cameraObj = GameObject.FindWithTag("Monitor");
         this.shootSession = cameraObj.GetComponent<ShootingSessionManager>();
 
-        this.defJump = rigidbody.movementSettings.JumpForce;
+        this.defJump = rigidBody.movementSettings.JumpForce;
         this.leaveJumpKey = true;
         this.isJumping = false;
     }
@@ -73,7 +70,7 @@ public class Player : MonoBehaviour
         bool yMovement = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S);
         bool movement = xMovement || yMovement;
         bool jump = Input.GetKey(KeyCode.Space) && !isJumping && leaveJumpKey;
-        bool onGround = rigidbody.Grounded;
+        bool onGround = rigidBody.Grounded;
 
         leaveJumpKey = Input.GetKeyUp(KeyCode.Space); //check if player doesn't hold jump key
         animator.SetBool("on_ground", onGround); //check if player hit ground
@@ -112,7 +109,7 @@ public class Player : MonoBehaviour
     /// <param name="flag">True to enable or false to disable (drops immediately to 0 acceleration)</param>
     private void Accelerate(bool flag) {
         //slowly accelerate
-        float acceleration = rigidbody.movementSettings.RunMultiplier;
+        float acceleration = rigidBody.movementSettings.RunMultiplier;
 
         if (flag) {
             if (acceleration + accelerationRate <= maxAcceleration)
@@ -120,11 +117,11 @@ public class Player : MonoBehaviour
         }
         else acceleration = 0;
 
-        rigidbody.movementSettings.RunMultiplier = acceleration;
+        rigidBody.movementSettings.RunMultiplier = acceleration;
 
         //increase jump height
         float jumpMultiplier = acceleration / maxAcceleration * 0.5f;
-        rigidbody.movementSettings.JumpForce = defJump + defJump * jumpMultiplier;
+        rigidBody.movementSettings.JumpForce = defJump + defJump * jumpMultiplier;
     }
 
     /// <summary>

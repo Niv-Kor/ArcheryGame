@@ -33,7 +33,7 @@ public class ScoreManager : MonoBehaviour
         if (!CheckTagException(projectileTag, clearedProjectileTag))
             throw new ProjectileTagException();
 
-        this.monitor = GameObject.FindGameObjectWithTag("Player Monitor");
+        this.monitor = GameObject.FindGameObjectWithTag("Monitor");
         Init();
     }
 
