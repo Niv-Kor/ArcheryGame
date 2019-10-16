@@ -50,7 +50,7 @@ public class ProjectileArrow : MonoBehaviour
 
     private Rigidbody rigidBody;
     private CameraManager camManager;
-    private GameObject arrowCamera, carrier, navigator, anchor;
+    private GameObject arrowCamera, windEffect, carrier, navigator, anchor;
     private ProjectileManager projManager;
     private ShootingSessionManager shootManager;
     private Quaternion lastRotation;
@@ -74,6 +74,8 @@ public class ProjectileArrow : MonoBehaviour
         //turbulence
         this.yawCounter = 0;
         this.yawFlag = true;
+        this.windEffect = transform.Find("Wind Trail").gameObject;
+        windEffect.SetActive(true);
 
         //switch to the arrow camera view
         GameObject monitor = GameObject.FindGameObjectWithTag("Monitor");
@@ -364,6 +366,7 @@ public class ProjectileArrow : MonoBehaviour
             //stick to the target
             rigidBody.constraints = RigidbodyConstraints.FreezeAll;
             transform.rotation = lastRotation;
+            windEffect.SetActive(false);
 
             //free flight arrow gets extra escort time
             if (freeFlight) timeRemainder = escortTime;
